@@ -2,3 +2,6 @@ name = "NucleicAcidFold"
 uuid = "c54b6bf2-3650-4185-8b5f-4b1290dd1f68"
 authors = ["Marco Matthies <marco.matthies@gmail.com>"]
 version = "0.1.0"
+
+[compat]
+julia = "1.6"
