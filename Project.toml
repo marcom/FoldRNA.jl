@@ -3,5 +3,13 @@ uuid = "c54b6bf2-3650-4185-8b5f-4b1290dd1f68"
 authors = ["Marco Matthies <marco.matthies@gmail.com>"]
 version = "0.1.0"
 
+[deps]
+
 [compat]
 julia = "1.6"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
