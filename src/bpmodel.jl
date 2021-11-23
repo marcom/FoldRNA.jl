@@ -16,7 +16,13 @@ const DEFAULT_BPMODEL_PARAM = BPmodelParam{Float64}(Dict(
 ))
 
 function energy(seq::AbstractString, pt::Pairtable, param::BPmodelParam{T}) where {T}
-    sum(param.score[(seq[i], seq[pt.pairs[i]])] for i in 1:length(pt) if isbpopening(pt, i))
+    en = zero(T)
+    for i = 1:length(pt)
+        if isbpopening(pt, i)
+            en += param.score[(seq[i], seq[pt.pairs[i]])]
+        end
+    end
+    return en
 end
 
 # Base-pair model recursions. O(n^3) time, O(n^2) space.
