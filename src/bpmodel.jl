@@ -1,4 +1,23 @@
+export energy
 using OffsetArrays: OffsetMatrix
+
+struct BPmodelParam{T}
+    score :: Dict{Tuple{Char,Char},T}
+    #unit :: Quantity
+end
+
+const DEFAULT_BPMODEL_PARAM = BPmodelParam{Float64}(Dict(
+    ('A','U') => -2.0,
+    ('U','A') => -2.0,
+    ('C','G') => -3.0,
+    ('G','C') => -3.0,
+    ('G','U') => -1.0,
+    ('U','G') => -1.0,
+))
+
+function energy(seq::AbstractString, pt::Pairtable, param::BPmodelParam{T}) where {T}
+    sum(param.score[(seq[i], seq[pt.pairs[i]])] for i in 1:length(pt) if isbpopening(pt, i))
+end
 
 # Base-pair model recursions. O(n^3) time, O(n^2) space.
 function bpmodel(T::Type, seq; hpmin::Integer=3, bp::Function)
