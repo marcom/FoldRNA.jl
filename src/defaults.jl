@@ -12,6 +12,9 @@ const DEFAULT_BASEPAIRS = Set([
     ('U', 'G'),
 ])
 
+const DEFAULT_NBASES = length(DEFAULT_BASES)
+const DEFAULT_NBASEPAIRS = length(DEFAULT_BASEPAIRS)
+
 function default_canbp(seq::AbstractString, i, j)
     a = seq[i]
     b = seq[j]

@@ -1,4 +1,4 @@
-export Pairtable, StrandInfo, randseq
+export Pairtable, StrandInfo, numseq, randseq
 
 const UNPAIRED = 0
 const UNPAIRED_CHAR = '.'
@@ -84,6 +84,23 @@ function Base.String(pt::Pairtable)
     end
     return join([ String(s[si.startidx:si.endidx]) for si in pt.strands ], NICK_CHAR)
 end
+
+
+"""
+    numseq(pt::Pairtable; nbases=DEFAULT_NBASES, nbasepairs=DEFAULT_NBASEPAIRS)
+    numseq(dbn::String; nbases=DEFAULT_NBASES, nbasepairs=DEFAULT_NBASEPAIRS)
+
+Number of sequences for a given secondary structure given as a
+`Pairtable` or as a string in dot-bracket notation.  Optionally the
+number of possible bases `nbases` and basepairs `nbasepairs` can be
+specified.
+"""
+numseq(pt::Pairtable; nbases=DEFAULT_NBASES, nbasepairs=DEFAULT_NBASEPAIRS) =
+    big(nbases)^numunpaired(pt) * big(nbasepairs)^numbasepaired(pt)
+numseq(dbn::String; nbases=DEFAULT_NBASES, nbasepairs=DEFAULT_NBASEPAIRS) =
+    numseq(Pairtable(dbn); nbases, nbasepairs)
+numseq(n::Integer; nbases=DEFAULT_NBASES) = big(nbases)^n
+
 
 """
     randseq(pt::Pairtable; [bases], [basepairs])

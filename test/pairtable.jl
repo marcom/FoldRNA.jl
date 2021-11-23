@@ -1,6 +1,7 @@
 using Test
 using NucleicAcidFold
 using NucleicAcidFold: hasbp, isunpaired, isbpopening, isbpclosing
+using NucleicAcidFold: DEFAULT_NBASES, DEFAULT_NBASEPAIRS, UNPAIRED_CHAR, BRACKET_OPEN
 
 const TEST_DBN_SINGLESTRAND = [
     ".",
@@ -129,6 +130,25 @@ const TEST_DBN = vcat(TEST_DBN_SINGLESTRAND, TEST_DBN_MULTISTRAND)
         @test !isbpclosing(pt, 8)
         @test isbpclosing(pt, 9)
         @test isbpclosing(pt, 10)
+    end
+
+    @testset "numseq" begin
+        dbn = "(((.....)))"
+        pt = Pairtable(dbn)
+        @test numseq(dbn) == numseq(pt) == DEFAULT_NBASEPAIRS^3 * DEFAULT_NBASES^5
+        for dbn in TEST_DBN
+            for nbases = 1:6, nbasepairs = 1:10
+                # TODO: hardcoded chars for unpaired and basepairs
+                up = count(c -> c == UNPAIRED_CHAR, dbn)
+                bp = count(c -> c in BRACKET_OPEN, dbn)
+                @test numseq(dbn; nbases, nbasepairs) == numseq(Pairtable(dbn); nbases, nbasepairs) ==
+                    big(nbasepairs)^bp * big(nbases)^up
+            end
+        end
+        for n = 1:10, nbases = 1:6
+            dbn = "."^n
+            @test numseq(n; nbases) == numseq(dbn; nbases)
+        end
     end
 
     @testset "randseq" begin
