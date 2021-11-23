@@ -1,3 +1,6 @@
+using Unitful: Unitful, @u_str, uconvert
+
+const RT37 = uconvert(u"kcal/mol/K", Unitful.R) * uconvert(u"K", 37.0u"°C")
 
 const DEFAULT_BASES = [
     'A', 'C', 'G', 'U'

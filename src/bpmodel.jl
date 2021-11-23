@@ -1,9 +1,10 @@
 export energy
 using OffsetArrays: OffsetMatrix
+using Unitful: @u_str, Quantity
 
 struct BPmodelParam{T}
     score :: Dict{Tuple{Char,Char},T}
-    #unit :: Quantity
+    unit :: Quantity
 end
 
 const DEFAULT_BPMODEL_PARAM = BPmodelParam{Float64}(Dict(
@@ -13,7 +14,7 @@ const DEFAULT_BPMODEL_PARAM = BPmodelParam{Float64}(Dict(
     ('G','C') => -3.0,
     ('G','U') => -1.0,
     ('U','G') => -1.0,
-))
+), 1.0u"kcal/mol")
 
 function energy(seq::AbstractString, pt::Pairtable, param::BPmodelParam{T}) where {T}
     en = zero(T)
@@ -22,7 +23,7 @@ function energy(seq::AbstractString, pt::Pairtable, param::BPmodelParam{T}) wher
             en += param.score[(seq[i], seq[pt.pairs[i]])]
         end
     end
-    return en
+    return en * param.unit
 end
 
 # Base-pair model recursions. O(n^3) time, O(n^2) space.
