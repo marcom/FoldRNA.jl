@@ -43,6 +43,9 @@ using OffsetArrays: OffsetArray
                 @test numstruct(n; hpmin) == table[n, hpmin]
                 @test numstruct(BigInt, n; hpmin) == table[n, hpmin]
                 @test numstruct(Int64, n; hpmin) == table[n, hpmin]
+                # test with log-semiring
+                x = numstruct(LogSR{Float64}, n; hpmin)
+                @test x.val ≈ log(table[n, hpmin])
             end
         end
     end
