@@ -53,7 +53,7 @@ using OffsetArrays: OffsetArray
     @testset "numstruct(\"N\"^n)" begin
         for hpmin = 0:7
             for n = 0:40
-                @test numstruct(n; hpmin) == numstruct("N"^n; hpmin)
+                @test numstruct("N"^n; hpmin) == numstruct(n; hpmin)
             end
         end
     end
