@@ -49,4 +49,19 @@ using OffsetArrays: OffsetArray
             end
         end
     end
+
+    @testset "numstruct(\"N\"^n)" begin
+        for hpmin = 0:7
+            for n = 0:40
+                @test numstruct(n; hpmin) == numstruct("N"^n; hpmin)
+            end
+        end
+    end
+
+    @testset "numstruct(seq)" begin
+        @test numstruct("CAG"; hpmin=0) == 2
+        @test numstruct("CCAGG"; hpmin=0) == 6
+        @test numstruct("GCGAAACGC"; hpmin=3) == 10
+    end
+
 end

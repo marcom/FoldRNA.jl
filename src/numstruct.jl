@@ -41,3 +41,32 @@ function numstruct(::Type{T}, n::Integer; hpmin::Integer=3) where {T}
     end
     return A[n]
 end
+
+"""
+    numstruct(bp::Function, seq; hpmin=3)
+    numstruct(T::Type, bp::Function, seq; hpmin=3)
+
+Number of unpseudoknotted secondary structures for a sequence `seq`,
+accumulated as type `T` (default is `BigInt`).  The function `bp(seq,
+i, j)` indicates a multiplicative contribution to all the structures
+that include the base-pair `(seq[i], seq[j])`.  The minimum allowed
+length of a hairpin loop is `hpmin`."""
+
+numstruct(bp::Function, seq; hpmin::Integer=3) =
+    numstruct(BigInt, bp, seq; hpmin)
+
+function numstruct(::Type{T}, bp::Function, seq; hpmin::Integer=3) where {T}
+    length(seq) == 0 && return zero(T)
+    return bpmodel(T, seq; hpmin, bp)[1, length(seq)]
+end
+
+"""
+    numstruct(seq::AbstractString; hpmin=3)
+
+Number of unpseudoknotted secondary structures for a sequence `seq`
+given as an `AbstractString`.  The permissible base-pairs are
+`$DEFAULT_BASEPAIRS`, and additionally the base `N` can base-pair with
+any other base. The minimum allowed length of a hairpin loop is
+`hpmin`. """
+numstruct(seq::AbstractString; hpmin::Integer=3) =
+    numstruct(default_canbp, seq; hpmin)
