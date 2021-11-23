@@ -4,6 +4,7 @@ using Unitful: @u_str, Quantity
 
 struct BPmodelParam{T}
     score :: Dict{Tuple{Char,Char},T}
+    RT :: Quantity
     unit :: Quantity
 end
 
@@ -14,7 +15,7 @@ const DEFAULT_BPMODEL_PARAM = BPmodelParam{Float64}(Dict(
     ('G','C') => -3.0,
     ('G','U') => -1.0,
     ('U','G') => -1.0,
-), 1.0u"kcal/mol")
+), RT37, 1.0u"kcal/mol")
 
 function energy(seq::AbstractString, pt::Pairtable, param::BPmodelParam{T}) where {T}
     en = zero(T)
