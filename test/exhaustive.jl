@@ -8,7 +8,7 @@ using NucleicAcidFold: exhaustive_partfn
         param = NucleicAcidFold.DEFAULT_BPMODEL_PARAM
         for T in (Float64, BigFloat, LogSR{Float64})
             @test exhaustive_partfn(T, seq, param) isa T
-            @test exhaustive_partfn(seq, NucleicAcidFold.DEFAULT_BPMODEL_PARAM) isa Quantity
+            @test exhaustive_partfn(seq, param) isa Quantity
         end
     end
 end
