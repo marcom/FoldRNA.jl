@@ -2,7 +2,7 @@ using NucleicAcidFold
 using Test, OffsetArrays
 
 @testset "numstruct" begin
-    @testset "numstruct(n::Int; hpmin::Int)" begin
+    @testset "numstruct(n::Int; hpmin)" begin
         # table[n,h] = number of unpseudoknotted secondary structures for
         #              sequence length n and minimum hairpin length h
         # rows start at n = 1
@@ -40,6 +40,8 @@ using Test, OffsetArrays
         for hpmin in axes(table,2)
             for n in axes(table,1)
                 @test numstruct(n; hpmin) == table[n, hpmin]
+                @test numstruct(BigInt, n; hpmin) == table[n, hpmin]
+                @test numstruct(Int64, n; hpmin) == table[n, hpmin]
             end
         end
     end

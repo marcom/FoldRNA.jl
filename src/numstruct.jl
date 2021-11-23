@@ -1,4 +1,4 @@
-# References:
+# References for number of secondary structures calculation:
 #    [1] Waterman, Smith (1978) RNA Secondary Structure: A Complete
 #        Mathematical Analysis. Math. Biosci., 42, 257–266.
 #        (recursion formula, free energy minimization)
@@ -12,7 +12,6 @@
 #        (contains table on p. 264 with values for n = 0:20, h = 0:6)
 
 export numstruct
-
 using OffsetArrays
 
 """
@@ -20,10 +19,11 @@ using OffsetArrays
 
 Number of unpseudoknotted secondary structures for a sequence of
 length `n`.  The minimum allowed length of a hairpin loop is `hpmin`.
-This function assumes that any base can base-pair with any other
-base."""
-function numstruct(n::Integer; hpmin::Integer=3)
-    T = BigInt
+This function assumes that any base can base-pair with any other base.
+"""
+numstruct(n::Integer; hpmin::Integer=3) = numstruct(BigInt, n; hpmin)
+
+function numstruct(::Type{T}, n::Integer; hpmin::Integer=3) where {T}
     n ≥ 0 || throw(ArgumentError("n must be non-negative (n = $n)"))
     hpmin ≥ 0 || throw(
         ArgumentError("hpmin must be non-negative (hpmin = $hpmin)"))
