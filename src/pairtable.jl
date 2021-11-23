@@ -1,4 +1,4 @@
-export Pairtable, StrandInfo
+export Pairtable, StrandInfo, randseq
 
 const UNPAIRED = 0
 const UNPAIRED_CHAR = '.'
@@ -25,6 +25,7 @@ Base.@kwdef struct StrandInfo
     # linkage_end :: Int   # 0 would mean linear
     iscircular :: Bool = false
 end
+Base.hash(s::StrandInfo, h::UInt) = hash(s.iscircular, hash(s.endidx, hash(s.startidx, h)))
 
 """
     StrandInfo(startidx, endidx) = StrandInfo(startidx, endidx, false)
@@ -62,6 +63,66 @@ end
 
 Base.length(pt::Pairtable) = length(pt.pairs)
 Base.:(==)(a::Pairtable, b::Pairtable) = (a.pairs == b.pairs) && (a.strands == b.strands)
+Base.hash(a::Pairtable, h::UInt) = hash(a.strands, hash(a.pairs, h))
+hasbp(pt::Pairtable, i::Int, j::Int) = pt.pairs[i] == j
+isunpaired(pt::Pairtable, i) = pt.pairs[i] == UNPAIRED
+isbpopening(pt::Pairtable, i) = pt.pairs[i] != UNPAIRED && i < pt.pairs[i]
+isbpclosing(pt::Pairtable, i) = pt.pairs[i] != UNPAIRED && pt.pairs[i] < i
+numunpaired(pt::Pairtable) = sum(isunpaired(pt, i) for i = 1:length(pt))
+numbasepaired(pt::Pairtable) = sum(isbpopening(pt, i) for i = 1:length(pt))
+
+function Base.String(pt::Pairtable)
+    # TODO: pseudoknots not handled or or even detected
+    # TODO: circular strands not handled
+    n = length(pt)
+    s = fill(UNPAIRED_CHAR, n)
+    for i in 1:length(pt)
+        if isbpopening(pt, i)
+            s[i] = BRACKET_OPEN[1]
+            s[pt.pairs[i]] = BRACKET_CLOSE[1]
+        end
+    end
+    return join([ String(s[si.startidx:si.endidx]) for si in pt.strands ], NICK_CHAR)
+end
+
+"""
+    randseq(pt::Pairtable; [bases], [basepairs])
+    randseq(dbn::String; [bases], [basepairs])
+
+Random sequence for a secondary structure given as a `Pairtable` or
+string in dot-bracket notation.  Optionally, the `bases` and
+`basepairs` to be used can be specified.
+"""
+function randseq(pt::Pairtable;
+                 bases=DEFAULT_BASES,
+                 basepairs=DEFAULT_BASEPAIRS)
+    if length(pt.strands) != 1
+        throw(ArgumentError("randseq doesn't handle multiple strands yet"))
+    end
+    n = length(pt)
+    seq = Vector{Char}(undef, n)
+    for i = 1:n
+        if isunpaired(pt, i)
+            seq[i] = rand(bases)
+        elseif isbpopening(pt, i)
+            a, b = rand(basepairs)
+            seq[i] = a
+            seq[pt.pairs[i]] = b
+        end
+    end
+    return join(seq)
+end
+randseq(dbn::AbstractString; bases=DEFAULT_BASES, basepairs=DEFAULT_BASEPAIRS) =
+    randseq(Pairtable(dbn); bases, basepairs)
+
+"""
+    randseq(n::Integer; [bases])
+
+Random sequence of length `n`.  Optionally, the possible `bases` to be
+used can be specified.
+"""
+randseq(n::Integer; bases=DEFAULT_BASES) = randseq(Pairtable("."^n); bases)
+
 
 """
     Pairtable(dbn::String)
@@ -85,7 +146,7 @@ julia> Pairtable("(.(.[+.).].)")
 Pairtable([11, 0, 7, 0, 9, 0, 3, 0, 5, 0, 1], StrandInfo[StrandInfo(1, 5, false), StrandInfo(6, 11, false)])
 ```
 """
-function Pairtable(dbn::String)
+function Pairtable(dbn::AbstractString)
     # TODO: doesn't support circular strands
     nbracket = length(BRACKET_OPEN)
     nstrand = count(c -> c == NICK_CHAR, dbn) + 1
