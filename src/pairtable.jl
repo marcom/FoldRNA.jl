@@ -6,11 +6,32 @@ const BRACKET_OPEN  = "([{<"
 const BRACKET_CLOSE = ")]}>"
 const NICK_CHAR = '+'
 
+"""
+    StrandInfo(startidx, endidx, iscircular)
+    StrandInfo(; startidx, endidx, iscircular)
+
+Strand information used in a Pairtable: start index `startidx` of the
+strand in the Pairtable, end index `endidx`, and if the strand
+`iscircular`.
+"""
 Base.@kwdef struct StrandInfo
     startidx   :: Int
     endidx     :: Int
+    # TODO: At the moment, strands can be either linear or circular.
+    # Should also support lariats.  The end should also be able to
+    # link back to any position (not just the first base as in the
+    # circular case).
+    # Possible solution:
+    # linkage_end :: Int   # 0 would mean linear
     iscircular :: Bool = false
 end
+
+"""
+    StrandInfo(startidx, endidx) = StrandInfo(startidx, endidx, false)
+
+Strand information for a linear (non-circular) strand.
+"""
+StrandInfo(startidx, endidx) = StrandInfo(startidx, endidx, false)
 
 struct Pairtable
     pairs   :: Vector{Int}
@@ -18,7 +39,7 @@ struct Pairtable
 end
 
 function Pairtable(strandlengths::Integer...)
-    # TODO: strands default to non-circular
+    # TODO: Strands default to non-circular.
     nstrand = length(strandlengths)
     if ! (nstrand > 0)
         throw(ArgumentError("No strandlengths given"))
@@ -34,7 +55,7 @@ function Pairtable(strandlengths::Integer...)
     for (i, len) in enumerate(strandlengths)
         startidx = endidx + 1
         endidx = endidx + len
-        strands[i] = StrandInfo(; startidx, endidx, iscircular=false)
+        strands[i] = StrandInfo(startidx, endidx)
     end
     return Pairtable(pairs, strands)
 end
