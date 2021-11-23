@@ -1,4 +1,8 @@
 
+const DEFAULT_BASES = [
+    'A', 'C', 'G', 'U'
+]
+
 const DEFAULT_BASEPAIRS = Set([
     ('A', 'U'),
     ('U', 'A'),
