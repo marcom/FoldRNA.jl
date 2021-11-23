@@ -1,5 +1,6 @@
 using NucleicAcidFold
-using Test, OffsetArrays
+using Test
+using OffsetArrays: OffsetArray
 
 @testset "numstruct" begin
     @testset "numstruct(n::Int; hpmin)" begin
