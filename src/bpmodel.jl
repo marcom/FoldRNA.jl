@@ -63,7 +63,7 @@ function bpmodel(A::OffsetMatrix{T}, seq; hpmin::Integer=3, bp::Function) where 
     return A
 end
 
-function partfn(seq, param::BPmodelParam{T}; hpmin::Integer=3) where {T}
+function partfn(seq::AbstractString, param::BPmodelParam{T}; hpmin::Integer=3) where {T}
     A = bpmodel(LogSR{Float64}, seq; hpmin,
                 bp = (s,i,j) -> exp(- param.score[(s[i],s[j])] / ustrip(param.RT)))
     logQ = A[1,length(seq)].val
