@@ -1,21 +1,27 @@
-export energy
+export energy, partfn
 using OffsetArrays: OffsetMatrix
-using Unitful: @u_str, Quantity
+using Unitful: @u_str, Quantity, ustrip
+using DataStructures: DefaultDict
 
 struct BPmodelParam{T}
-    score :: Dict{Tuple{Char,Char},T}
+    score :: DefaultDict{Tuple{Char,Char},T}
     RT :: Quantity
     unit :: Quantity
 end
 
-const DEFAULT_BPMODEL_PARAM = BPmodelParam{Float64}(Dict(
-    ('A','U') => -2.0,
-    ('U','A') => -2.0,
-    ('C','G') => -3.0,
-    ('G','C') => -3.0,
-    ('G','U') => -1.0,
-    ('U','G') => -1.0,
-), RT37, 1.0u"kcal/mol")
+const DEFAULT_BPMODEL_PARAM = BPmodelParam{Float64}(
+    DefaultDict(Inf,
+                Dict(
+                    ('A','U') => -2.0,
+                    ('U','A') => -2.0,
+                    ('C','G') => -3.0,
+                    ('G','C') => -3.0,
+                    ('G','U') => -1.0,
+                    ('U','G') => -1.0,
+                )),
+    RT37,
+    1.0u"kcal/mol"
+)
 
 function energy(seq::AbstractString, pt::Pairtable, param::BPmodelParam{T}) where {T}
     en = zero(T)
@@ -55,4 +61,11 @@ function bpmodel(A::OffsetMatrix{T}, seq; hpmin::Integer=3, bp::Function) where 
         end
     end
     return A
+end
+
+function partfn(seq, param::BPmodelParam{T}; hpmin::Integer=3) where {T}
+    A = bpmodel(LogSR{Float64}, seq; hpmin,
+                bp = (s,i,j) -> exp(- param.score[(s[i],s[j])] / ustrip(param.RT)))
+    logQ = A[1,length(seq)].val
+    return - param.RT * logQ
 end
