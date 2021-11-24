@@ -34,7 +34,7 @@ function energy(seq::AbstractString, pt::Pairtable, param::BPmodelParam{T}) wher
 end
 
 # Base-pair model recursions. O(n^3) time, O(n^2) space.
-function bpmodel(T::Type, seq; hpmin::Integer=3, bp::Function)
+function bpmodel(::Type{T}, seq; hpmin::Integer=3, bp::Function) where {T}
     # TODO: check that indices of seq are 1:n
     n = length(seq)
     A = OffsetMatrix(Matrix{T}(undef, n+1, n+1), 0:n, 0:n)
