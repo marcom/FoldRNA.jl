@@ -1,5 +1,6 @@
 module NucleicAcidFold
 
+include("alphabet.jl")
 include("semiring-log.jl")
 
 include("defaults.jl")

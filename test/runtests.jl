@@ -1,4 +1,5 @@
 
+include("alphabet.jl")
 include("semiring-log.jl")
 
 include("pairtable.jl")
