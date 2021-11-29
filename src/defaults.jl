@@ -18,6 +18,8 @@ const DEFAULT_BASEPAIRS = Set([
 const DEFAULT_NBASES = length(DEFAULT_BASES)
 const DEFAULT_NBASEPAIRS = length(DEFAULT_BASEPAIRS)
 
+const DEFAULT_HPMIN = 3
+
 function default_canbp(seq::AbstractString, i, j)
     a = seq[i]
     b = seq[j]

@@ -1,17 +1,17 @@
-function exhaustive_partfn(::Type{T}, seq::AbstractString, param::BPmodelParam;
-                           hpmin::Integer=3) where {T}
-    # TODO: take temperature from param
+function exhaustive_partfn(::Type{T}, fold::Fold) where {T}
+    # TODO: take temperature from fold.model
+    RT = fold.model.RT
     Q = zero(T)
-    for pt in allstruct(seq; hpmin)
-        en = energy(seq, pt, param)
-        Q += exp(- en / param.RT)
+    seq = decode(fold.model.al, fold.seq)
+    for pt in allstruct(seq; fold.model.hpmin)
+        en = energy(fold, pt)
+        Q += exp(- en / RT)
     end
     return Q
 end
 
-function exhaustive_partfn(seq::AbstractString, param::BPmodelParam;
-                           hpmin::Integer=3)
-    s = exhaustive_partfn(LogSR{Float64}, seq, param; hpmin)
+function exhaustive_partfn(fold::Fold)
+    s = exhaustive_partfn(LogSR{Float64}, fold)
     logQ = s.val
-    return - param.RT * logQ
+    return - fold.model.RT * logQ
 end

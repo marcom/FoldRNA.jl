@@ -3,35 +3,25 @@ using OffsetArrays: OffsetMatrix
 using Unitful: @u_str, Quantity, ustrip
 using DataStructures: DefaultDict
 
-struct BPmodelParam{T}
-    score :: DefaultDict{Tuple{Char,Char},T}
+struct BpModel{T}
+    name :: String
+    al :: Alphabet
+    score_bp :: Matrix{T}
     RT :: Quantity
     unit :: Quantity
+    hpmin :: Int
 end
+encode(m::BpModel, iter) = encode(m.al, iter)
+decode(m::BpModel, iter) = decode(m.al, iter)
 
-const DEFAULT_BPMODEL_PARAM = BPmodelParam{Float64}(
-    DefaultDict(Inf,
-                Dict(
-                    ('A','U') => -2.0,
-                    ('U','A') => -2.0,
-                    ('C','G') => -3.0,
-                    ('G','C') => -3.0,
-                    ('G','U') => -1.0,
-                    ('U','G') => -1.0,
-                )),
+const RNA_BPMODEL = BpModel{Float64}(
+    "RNA Nussinov-Jacobson model (basepairs)",
+    Alphabet("RNA", "ACGU"),
+    [ Inf Inf Inf -2.0; Inf Inf -3.0 Inf; Inf -3.0 Inf -1.0; -2.0 Inf -1.0 Inf ],
     RT37,
-    1.0u"kcal/mol"
+    1.0u"kcal/mol",
+    DEFAULT_HPMIN
 )
-
-function energy(seq::AbstractString, pt::Pairtable, param::BPmodelParam{T}) where {T}
-    en = zero(T)
-    for i = 1:length(pt)
-        if isbpopening(pt, i)
-            en += param.score[(seq[i], seq[pt.pairs[i]])]
-        end
-    end
-    return en * param.unit
-end
 
 # Base-pair model recursions. O(n^3) time, O(n^2) space.
 function bpmodel(::Type{T}, seq; hpmin::Integer=3, bp::Function) where {T}
@@ -61,11 +51,4 @@ function bpmodel(A::OffsetMatrix{T}, seq; hpmin::Integer=3, bp::Function) where 
         end
     end
     return A
-end
-
-function partfn(seq::AbstractString, param::BPmodelParam{T}; hpmin::Integer=3) where {T}
-    A = bpmodel(LogSR{Float64}, seq; hpmin,
-                bp = (s,i,j) -> exp(- param.score[(s[i],s[j])] / ustrip(param.RT)))
-    logQ = A[1,length(seq)].val
-    return - param.RT * logQ
 end

@@ -1,19 +1,22 @@
 using Test
 using Unitful: Quantity
-using NucleicAcidFold: exhaustive_partfn
+using NucleicAcidFold: Fold, exhaustive_partfn, RNA_BPMODEL
 
 @testset "exhaustive" begin
     @testset "bpmodel partfn" begin
-        param = NucleicAcidFold.DEFAULT_BPMODEL_PARAM
+        model = RNA_BPMODEL
         seq = "GGGAAACCC"
         for T in (Float64, BigFloat, LogSR{Float64})
-            @test exhaustive_partfn(T, seq, param) isa T
-            @test exhaustive_partfn(seq, param) isa Quantity
+            fold = Fold(seq, model)
+            @test exhaustive_partfn(T, fold) isa T
+            @test exhaustive_partfn(fold) isa Quantity
         end
 
-        param = NucleicAcidFold.DEFAULT_BPMODEL_PARAM
         for seq in ["UUUCGAAGUUAGUCA", "CGUGGUCCUCUCCGU"]
-            @test exhaustive_partfn(seq, param) ≈ partfn(seq, param)
+            fold = Fold(seq, model)
+            RTlogQ = model.RT * log(exhaustive_partfn(Float64, fold))
+            @test -RTlogQ ≈ partfn(fold)
+            @test exhaustive_partfn(fold) ≈ partfn(fold)
         end
     end
 end

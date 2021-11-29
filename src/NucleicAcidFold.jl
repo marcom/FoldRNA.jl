@@ -9,6 +9,7 @@ include("allseq.jl")
 include("allstruct.jl")
 include("bpmodel.jl")
 include("numstruct.jl")
+include("fold.jl")
 include("exhaustive.jl")
 
 end # module

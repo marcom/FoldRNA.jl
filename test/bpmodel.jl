@@ -3,9 +3,6 @@ using NucleicAcidFold: bpmodel
 using Unitful: @u_str
 
 @testset "bpmodel" begin
-    @testset "energy" begin
-        @test energy("GGGAAACCC", Pairtable("(((...)))"), NucleicAcidFold.DEFAULT_BPMODEL_PARAM) == -9.0u"kcal/mol"
-    end
     @testset "bpmodel" begin
         # check that number of visited structures is correct
         function mynumstruct(seq; hpmin)
