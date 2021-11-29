@@ -103,7 +103,6 @@ isohot(a::Alphabet, n::Integer) = isohot(length(a.chars), n)
 # inverse of onehot
 # possible alternative names: idxmax (pandas), hotone
 function hotidx(pseq::Matrix; dims=1)
-    # TODO: findmax requires julia-1.7
     _, cidxs = findmax(pseq; dims)
     otherdim = dims == 1 ? 2 : 1
     return reshape(map(c -> c[dims], cidxs), size(pseq, otherdim))
