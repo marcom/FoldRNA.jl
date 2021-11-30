@@ -1,6 +1,6 @@
 function exhaustive_mfe(fold::Fold)
     n = length(fold)
-    pt_min = Pairtable("."^n)
+    pt_min = Pairtable(n)
     en_min = energy(fold, pt_min)
     seq = decode(fold.model.al, fold.seq)
     for pt in allstruct(seq; fold.model.hpmin)
