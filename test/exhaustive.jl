@@ -1,9 +1,14 @@
 using Test
 using Unitful: Quantity
-using NucleicAcidFold: Fold, exhaustive_partfn, RNA_BPMODEL
+using NucleicAcidFold: Fold, exhaustive_mfe, exhaustive_partfn, RNA_BPMODEL
 
 @testset "exhaustive" begin
-    @testset "bpmodel partfn" begin
+    @testset "mfe for bpmodel" begin
+        seq = "GGGAAACCC"
+        model = RNA_BPMODEL
+        @test exhaustive_mfe(Fold(seq, model)) == (-9.0u"kcal/mol", Pairtable("(((...)))"))
+    end
+    @testset "partfn for bpmodel" begin
         model = RNA_BPMODEL
         seq = "GGGAAACCC"
         for T in (Float64, BigFloat, LogSR{Float64})
