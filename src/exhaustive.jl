@@ -14,13 +14,11 @@ function exhaustive_mfe(fold::Fold)
 end
 
 function exhaustive_partfn(::Type{T}, fold::Fold) where {T}
-    # TODO: take temperature from fold.model
-    RT = fold.model.RT
-    Q = zero(T)
+    RT, hpmin = fold.model.RT, fold.model.hpmin
     seq = decode(fold.model.al, fold.seq)
-    for pt in allstruct(seq; fold.model.hpmin)
-        en = energy(fold, pt)
-        Q += exp(- en / RT)
+    Q = zero(T)
+    for pt in allstruct(seq; hpmin)
+        Q += exp(- energy(fold, pt) / RT)
     end
     return Q
 end
