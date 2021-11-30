@@ -7,7 +7,7 @@ using Unitful: @u_str
         # check that number of visited structures is correct
         function mynumstruct(seq; hpmin)
             A = bpmodel(BigInt, seq;
-                        hpmin, bp = (s,i,j) -> (s[i],s[j]) == ('N','N'))
+                        hpmin, bp = (s,i,j) -> true)
             return A[1, length(seq)]
         end
         for n = 30:33
