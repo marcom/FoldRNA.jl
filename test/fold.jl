@@ -7,6 +7,7 @@ using Unitful: Quantity
     dbn = "(((...)))"
     pt = Pairtable(dbn)
     fold = Fold(seq, RNA_BPMODEL)
+    @test length(fold) == length(seq)
     @test energy(fold, dbn) isa Quantity
     @test energy(fold, pt) isa Quantity
     @test partfn(fold) isa Quantity
