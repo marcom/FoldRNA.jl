@@ -1,6 +1,7 @@
 
 include("alphabet.jl")
 include("semiring-log.jl")
+include("semiring-minplus.jl")
 
 include("pairtable.jl")
 include("allseq.jl")

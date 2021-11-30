@@ -2,6 +2,7 @@ module NucleicAcidFold
 
 include("alphabet.jl")
 include("semiring-log.jl")
+include("semiring-minplus.jl")
 
 include("defaults.jl")
 include("pairtable.jl")
