@@ -1,4 +1,4 @@
-export energy, partfn
+export energy, mfe, partfn
 using OffsetArrays: OffsetMatrix
 using Unitful: @u_str, Quantity, ustrip
 using DataStructures: DefaultDict

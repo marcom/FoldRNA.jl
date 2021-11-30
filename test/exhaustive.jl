@@ -7,6 +7,14 @@ using NucleicAcidFold: Fold, exhaustive_mfe, exhaustive_partfn, RNA_BPMODEL
         seq = "GGGAAACCC"
         model = RNA_BPMODEL
         @test exhaustive_mfe(Fold(seq, model)) == (-9.0u"kcal/mol", Pairtable("(((...)))"))
+        # compare exhaustive mfe for random seq to dyn prog solution
+        for _ = 1:3
+            seq = randseq(13)
+            fold = Fold(seq, model)
+            en_mfe = mfe(fold)
+            en_mfe_ex, _ = exhaustive_mfe(fold)
+            @test en_mfe == en_mfe_ex
+        end
     end
     @testset "partfn for bpmodel" begin
         model = RNA_BPMODEL

@@ -58,6 +58,15 @@ end
 
 energy(fold::Fold, dbn::AbstractString) = energy(fold, Pairtable(dbn))
 
+# TODO: backtrack missing
+function mfe(fold::Fold{M}) where {T, M <: BpModel{T}}
+    A = bpmodel(MinPlusSR{T}, fold; fold.model.hpmin,
+                bp = (f, i, j) -> score(f, Basepair(i, j))
+        )
+    en_mfe = A[1, length(fold)].val
+    return fold.model.unit * en_mfe
+end
+
 function partfn(fold::Fold{M}) where {T, M <: BpModel{T}}
     A = bpmodel(LogSR{T}, fold; fold.model.hpmin,
                 bp = (f, i, j) -> score_exp(f, Basepair(i,j))
