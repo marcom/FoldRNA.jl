@@ -71,6 +71,17 @@ isbpclosing(pt::Pairtable, i) = pt.pairs[i] != UNPAIRED && pt.pairs[i] < i
 numunpaired(pt::Pairtable) = sum(isunpaired(pt, i) for i = 1:length(pt))
 numbasepaired(pt::Pairtable) = sum(isbpopening(pt, i) for i = 1:length(pt))
 
+function Base.isvalid(pt::Pairtable; hpmin::Integer=3)
+    n = length(pt)
+    for i = 1:n
+        isbpopening(pt, i) || continue
+        if pt.pairs[i] - i - 1 < hpmin
+            return false
+        end
+    end
+    return true
+end
+
 function Base.String(pt::Pairtable)
     # TODO: pseudoknots not handled or or even detected
     # TODO: circular strands not handled

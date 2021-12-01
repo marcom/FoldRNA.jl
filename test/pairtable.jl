@@ -132,6 +132,21 @@ const TEST_DBN = vcat(TEST_DBN_SINGLESTRAND, TEST_DBN_MULTISTRAND)
         @test isbpclosing(pt, 10)
     end
 
+    @testset "isvalid" begin
+        pt = Pairtable("()")
+        @test isvalid(pt) == false
+        @test isvalid(pt; hpmin=1) == false
+        @test isvalid(pt; hpmin=0) == true
+        pt = Pairtable("(..)")
+        @test isvalid(pt) == false
+        @test isvalid(pt; hpmin=2) == true
+        pt = Pairtable("((...))")
+        @test isvalid(pt) == true
+        @test isvalid(pt; hpmin=3) == true
+        @test isvalid(pt; hpmin=4) == false
+        @test isvalid(pt; hpmin=10) == false
+    end
+
     @testset "numseq" begin
         dbn = "(((.....)))"
         pt = Pairtable(dbn)
