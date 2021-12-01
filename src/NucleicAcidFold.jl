@@ -1,5 +1,7 @@
 module NucleicAcidFold
 
+include("fixedsize-priorityqueue.jl")
+
 include("alphabet.jl")
 include("semiring-log.jl")
 include("semiring-minplus.jl")
