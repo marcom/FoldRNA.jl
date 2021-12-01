@@ -28,3 +28,20 @@ function exhaustive_partfn(fold::Fold)
     logQ = s.val
     return - fold.model.RT * logQ
 end
+
+# exhaustive sequence design / inverse folding
+# find sequences with highest probability of target structure
+function exhaustive_design(target::Pairtable, model; nbest::Integer=20)
+    if ! isvalid(target; hpmin=model.hpmin)
+        throw(ArgumentError("target structure has hairpins with size < hpmin"))
+    end
+    best = FixedsizePQ{String,Float64}(nbest)
+    for seq in allseq(target)
+        ptarget = prob_of_struct(Fold(seq, model), target)
+        enqueue!(best, seq, ptarget)
+    end
+    return collect(best)
+end
+
+exhaustive_design(dbn::AbstractString, model; nbest::Integer=20) =
+    exhaustive_design(Pairtable(dbn), model; nbest)
