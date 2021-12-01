@@ -15,5 +15,6 @@ include("numstruct.jl")
 include("fold.jl")
 include("fold-pseq.jl")
 include("exhaustive.jl")
+include("design.jl")
 
 end # module
