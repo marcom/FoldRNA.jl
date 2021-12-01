@@ -1,4 +1,4 @@
-export energy, mfe, partfn
+export BpModel, RNA_BPMODEL
 using OffsetArrays: OffsetMatrix
 using Unitful: @u_str, Quantity, ustrip
 using DataStructures: DefaultDict

@@ -1,6 +1,8 @@
 using LinearAlgebra: dot
 using UnicodePlots: heatmap
 
+export FoldPseq
+
 struct FoldPseq{T,M}
     # TODO: circular strand, multiple strands
     pseq :: Matrix{T}
