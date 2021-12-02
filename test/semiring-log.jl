@@ -8,6 +8,7 @@ using NucleicAcidFold: LogSR
     y = LogSR(2.0)
     @test (x + y) isa typeof(x)
     @test (x * y) isa typeof(x)
+    @test (x / y) isa typeof(x)
 
     for T in (Float32, Float64, BigFloat)
         @test LogSR{T} <: Number

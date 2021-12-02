@@ -15,6 +15,7 @@ LogSR(x) = LogSR{Float64}(x)
 Base.:(==)(x::LogSR{T}, y::LogSR{T}) where {T} = x.val == y.val
 Base.:+(x::LogSR{T}, y::LogSR{T}) where {T} = LogSR{T}(logaddexp(x.val, y.val))
 Base.:*(x::LogSR{T}, y::LogSR{T}) where {T} = LogSR{T}(x.val + y.val)
+Base.:/(x::LogSR{T}, y::LogSR{T}) where {T} = LogSR{T}(x.val - y.val)
 Base.zero(::Type{LogSR{T}}) where {T} = LogSR{T}(typemin(T))
 Base.one(::Type{LogSR{T}}) where {T} = LogSR{T}(zero(T))
 Base.:+(x::LogSR{T}, y::Number) where {T} = x + LogSR{T}(log(T(y)))
