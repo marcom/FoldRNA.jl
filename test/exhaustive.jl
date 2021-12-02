@@ -1,7 +1,7 @@
 using Test
 using Unitful: Quantity
 using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
-    exhaustive_design
+    exhaustive_bpp_partfn, exhaustive_design
 
 @testset "exhaustive" begin
     @testset "mfe (bpmodel)" begin
@@ -32,6 +32,20 @@ using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
             @test -RTlogQ ≈ partfn(fold)
             @test exhaustive_partfn(fold) ≈ partfn(fold)
         end
+    end
+
+    @testset "bpp_partfn (bpmodel)" begin
+        seq = "GGGAAACCC"
+        model = RNA_BPMODEL
+        T = BigFloat
+        n = length(seq)
+        fold = Fold(seq, model)
+        mRTlogQ, p = exhaustive_bpp_partfn(fold)
+        @test mRTlogQ isa Quantity
+        @test p isa Matrix
+        @test size(p) == (n, n)
+        @test all(x -> 0.0 <= x <= 1.0, p)
+        @test mRTlogQ ≈ partfn(fold)
     end
 
     @testset "design (bpmodel)" begin

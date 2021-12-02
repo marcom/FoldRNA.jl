@@ -29,6 +29,33 @@ function exhaustive_partfn(fold::Fold)
     return - fold.model.RT * logQ
 end
 
+function exhaustive_bpp_partfn(::Type{T}, fold::Fold) where {T}
+    n = length(fold)
+    RT, hpmin = fold.model.RT, fold.model.hpmin
+    seq = decode(fold.model.al, fold.seq)
+    Q = zero(T)
+    p = zeros(T, n, n)
+    for pt in allstruct(seq; hpmin)
+        weight = exp(- energy(fold, pt) / RT)
+        Q += weight
+        for i = 1:n
+            if isbpopening(pt, i)
+                j = pt.pairs[i]
+                p[i,j] += weight
+                p[j,i] += weight
+            end
+        end
+    end
+    return Q, p ./ Q
+end
+
+function exhaustive_bpp_partfn(fold::Fold)
+    Q, p = exhaustive_bpp_partfn(LogSR{Float64}, fold)
+    logQ = Q.val
+    return - fold.model.RT * logQ, map(x -> exp(x.val), p)
+end
+
+
 # exhaustive sequence design / inverse folding
 # find sequences with highest probability of target structure
 function exhaustive_design(target::Pairtable, model; nbest::Integer=20)
