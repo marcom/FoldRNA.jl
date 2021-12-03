@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: bpmodel
+using NucleicAcidFold: bpmodel, bpmodel_bpp
 using Unitful: @u_str
 
 @testset "bpmodel" begin
@@ -15,5 +15,16 @@ using Unitful: @u_str
                 @test mynumstruct("N"^n; hpmin) == numstruct(n; hpmin)
             end
         end
+    end
+    @testset "bpmodel_bpp" begin
+        fold = Fold("GGGAAACCC", RNA_BPMODEL)
+        n = length(fold)
+        A = bpmodel(LogSR{Float64}, fold; hpmin=fold.model.hpmin,
+                    bp = (f,i,j) -> 1.0)
+        p = bpmodel_bpp(A, fold; hpmin=fold.model.hpmin,
+                        bp = (f,i,j) -> 1.0)
+        @test p isa Matrix
+        @test size(p) == (n,n)
+        @test all(x -> 0.0 <= x <= 1.0, p)
     end
 end

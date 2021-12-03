@@ -76,6 +76,15 @@ function partfn(fold::Fold{M}) where {T, M <: BpModel{T}}
     return - fold.model.RT * logQ
 end
 
+function bpp(fold::Fold{M}) where {T, M <: BpModel{T}}
+    A = bpmodel(LogSR{T}, fold; fold.model.hpmin,
+                bp = (f, i, j) -> score_exp(f, Basepair(i,j))
+        )
+    p = bpmodel_bpp(A, fold; hpmin=fold.model.hpmin,
+                    bp = (f, i, j) -> score_exp(f, Basepair(i, j)))
+    return p
+end
+
 function prob_of_struct(fold::Fold, pt::Pairtable)
     RT = fold.model.RT
     en = energy(fold, pt)
