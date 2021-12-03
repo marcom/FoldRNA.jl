@@ -26,7 +26,7 @@ using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
             @test exhaustive_partfn(fold) isa Quantity
         end
 
-        for seq in ["UUUCGAAGUUAGUCA", "CGUGGUCCUCUCCGU"]
+        for seq in ["A", "UUUCGAAGUUAGUCA", "CGUGGUCCUCUCCGU"]
             fold = Fold(seq, model)
             RTlogQ = model.RT * log(exhaustive_partfn(Float64, fold))
             @test -RTlogQ ≈ partfn(fold)
@@ -35,17 +35,19 @@ using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
     end
 
     @testset "bpp_partfn (bpmodel)" begin
-        seq = "GGGAAACCC"
         model = RNA_BPMODEL
         T = BigFloat
-        n = length(seq)
-        fold = Fold(seq, model)
-        mRTlogQ, p = exhaustive_bpp_partfn(fold)
-        @test mRTlogQ isa Quantity
-        @test p isa Matrix
-        @test size(p) == (n, n)
-        @test all(x -> 0.0 <= x <= 1.0, p)
-        @test mRTlogQ ≈ partfn(fold)
+        for seq in ["G", "GGGAAACCC", "GAGAAACUUUCCACG"]
+            n = length(seq)
+            fold = Fold(seq, model)
+            mRTlogQ, p = exhaustive_bpp_partfn(fold)
+            @test mRTlogQ isa Quantity
+            @test p isa Matrix
+            @test size(p) == (n, n)
+            @test all(x -> 0.0 <= x <= 1.0, p)
+            @test mRTlogQ ≈ partfn(fold)
+            @test p ≈ bpp(fold)
+        end
     end
 
     @testset "design (bpmodel)" begin

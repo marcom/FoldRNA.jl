@@ -1,4 +1,4 @@
-export Fold, energy, mfe, partfn, prob_of_struct
+export Fold, energy, mfe, partfn, bpp, prob_of_struct
 
 # Fold
 
