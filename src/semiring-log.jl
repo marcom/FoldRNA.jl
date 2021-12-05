@@ -23,4 +23,4 @@ Base.:+(x::LogSR{T}, y::Number) where {T} = x + LogSR{T}(log(T(y)))
 Base.:+(x::Number, y::LogSR{T}) where {T} = LogSR{T}(log(T(x))) + y
 Base.:*(x::LogSR{T}, y::Number) where {T} = x * LogSR{T}(log(T(y)))
 Base.:*(x::Number, y::LogSR{T}) where {T} = LogSR{T}(log(T(x))) * y
-
+Base.show(io::IO, ::MIME"text/plain", x::LogSR{T}) where {T} = print(io, "exp($(x.val))")
