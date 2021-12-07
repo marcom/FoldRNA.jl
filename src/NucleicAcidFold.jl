@@ -14,7 +14,7 @@ include("bpmodel.jl")
 include("loopmodel.jl")
 include("numstruct.jl")
 include("fold.jl")
-include("fold-pseq.jl")
+include("foldpseq.jl")
 include("exhaustive.jl")
 include("design.jl")
 
