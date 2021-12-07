@@ -23,24 +23,6 @@ end
 
 String(fold::FoldPseq) = decode(fold.model.al, hotidx(fold.pseq))
 
-
-# score, score_exp for FoldPseq
-
-function score(f::FoldPseq{T,M}, bp::Basepair) where {T, M <: BpModel}
-    p = f.pseq
-    B = f.model.score_bp
-    return dot(p[:, bp.i], B, p[:, bp.j])
-end
-function score_exp(f::FoldPseq{T,M}, bp::Basepair) where {T, M <: BpModel}
-    p = f.pseq
-    B = f.model.score_bp
-    RT = ustrip(f.model.RT)
-    return exp(- dot(p[:, bp.i], B, p[:, bp.j]) / RT)
-end
-
-
-# energy, partfn for FoldPseq
-
 function energy(fold::FoldPseq{T,M}, pt::Pairtable) where {T, Tp, M <: BpModel{Tp}}
     # Note: en has to be of type T (coming from FoldPseq) for
     #       forward-mode autodiff to work
@@ -77,7 +59,6 @@ end
 
 prob_of_struct(fold::FoldPseq, dbn::AbstractString) =
     prob_of_struct(fold, Pairtable(dbn))
-
 
 
 # onehot, isohot, hotidx for pseq

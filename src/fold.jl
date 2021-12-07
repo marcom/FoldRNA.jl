@@ -21,30 +21,6 @@ end
 bptype(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
     bptype(fold.model, fold.seq[i], fold.seq[j])
 
-# score, score_exp for Fold
-
-struct Basepair
-    i :: Int
-    j :: Int
-end
-
-function score(f::Fold{M}, bp::Basepair) where {M <: BpModel}
-    si = f.seq[bp.i]
-    sj = f.seq[bp.j]
-    BP = f.model.score_bp
-    return BP[si, sj]
-end
-
-function score_exp(f::Fold{M}, bp::Basepair) where {M <: BpModel}
-    si = f.seq[bp.i]
-    sj = f.seq[bp.j]
-    BP = f.model.score_bp
-    RT = ustrip(f.model.RT)
-    return exp(- BP[si, sj] / RT)
-end
-
-
-# energy, partfn for Fold
 
 function energy(fold::Fold{M}, pt::Pairtable) where {T, M <: BpModel{T}}
     # TODO: should we check here if any base-pair distance is smaller
@@ -98,4 +74,3 @@ end
 
 prob_of_struct(fold::Fold, dbn::AbstractString) =
     prob_of_struct(fold, Pairtable(dbn))
-
