@@ -28,6 +28,7 @@ Base.@kwdef mutable struct LoopModel{T,Tseq,NB,NBP,MAXLOOP}
     # multiloops              multiloop_*
     # exterior loop           extloop_unpaired
     alphabet           :: Alphabet
+    bptype             :: Matrix{Int} = zeros(Int, NB, NB)
     maxloop = MAXLOOP
     stack              :: MArray{Tuple{NBP, NBP}, T} = @MArray zeros(T, NBP, NBP)
     hairpin_init       :: OffsetArray{T} = OffsetArray(zeros(T, MAXLOOP+1), 0:MAXLOOP)
@@ -58,3 +59,7 @@ Base.@kwdef mutable struct LoopModel{T,Tseq,NB,NBP,MAXLOOP}
     # energy unit of parameters
     unit :: Quantity = 1.0u"kcal/mol"
 end
+
+encode(m::LoopModel, iter) = encode(m.alphabet, iter)
+decode(m::LoopModel, iter) = decode(m.alphabet, iter)
+bptype(m::LoopModel, si::Integer, sj::Integer) = m.bptype[si, sj]

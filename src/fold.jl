@@ -17,6 +17,9 @@ function Base.show(io::IO, mime::MIME"text/plain", fold::Fold)
     print(  io, " Seq: ", decode(fold.model, fold.seq))
 end
 
+# Note: only implemented for LoopModel at the moment
+bptype(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
+    bptype(fold.model, fold.seq[i], fold.seq[j])
 
 # score, score_exp for Fold
 

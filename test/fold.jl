@@ -8,7 +8,9 @@ using Unitful: Quantity
         seq = "GGGAAACCC"
         dbn = "(((...)))"
         pt = Pairtable(dbn)
-        fold = Fold(seq, RNA_BPMODEL)
+        model = RNA_BPMODEL
+
+        fold = Fold(seq, model)
         @test length(fold) == length(seq)
         @test energy(fold, dbn) isa Quantity
         @test energy(fold, pt) isa Quantity
@@ -16,5 +18,11 @@ using Unitful: Quantity
         @test partfn(fold) isa Quantity
         @test prob_of_struct(fold, dbn) isa Float64
         @test prob_of_struct(fold, pt) isa Float64
+    end
+    @testset "for LoopModel" begin
+        seq = "GGGAAACCC"
+        model = LoopModel{Float64,Int,4,6,30}(alphabet=Alphabet("ACGU"))
+        fold = Fold(seq, model)
+        @test bptype(fold, 1, 9) isa Int
     end
 end

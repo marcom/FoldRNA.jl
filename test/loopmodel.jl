@@ -1,8 +1,10 @@
 using Test
-using NucleicAcidFold
+using NucleicAcidFold: bptype
 
 @testset "loopmodel" begin
     @testset "LoopModel" begin
-        @test LoopModel{Float64,Int,4,6,30}(alphabet=Alphabet("ACGU")) isa LoopModel
+        model = LoopModel{Float64,Int,4,6,30}(alphabet=Alphabet("ACGU"))
+        @test model isa LoopModel
+        @test bptype(model, 1, 1) isa Int
     end
 end
