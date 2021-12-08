@@ -46,9 +46,9 @@ end
 score_terminal_nonGC(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
     fold.model.terminal_nonGC_bp[bptype(fold, i, j)]
 
-function score_mismatch(fold::Fold{M}, mismatch_param,
-                        i::Integer, j::Integer,
-                        k::Integer, l::Integer) where {M <: LoopModel}
+function score_mismatch(fold::Fold{M}, i::Integer, j::Integer,
+                        k::Integer, l::Integer,
+                        mismatch_param) where {M <: LoopModel}
     return mismatch_param[bptype(fold, i, j), fold.seq[k], fold.seq[l]]
 end
 
@@ -57,9 +57,10 @@ function energy(fold::Fold{M}, hairpin::Hairpinloop) where {M <: LoopModel}
     len = j - i - 1
     if isspecialhairpin(fold, hairpin)
         # special hairpin loop (Triloop, Tetraloop, etc.)
-        return score_hairpin_special(fold, hairpin)
+        en = score_hairpin_special(fold, hairpin)
+    else
+        en = score_hairpin_init(fold, len) +
+            score_hairpin_mismatch(fold, hairpin, len)
     end
-    en = score_hairpin_init(fold, len)
-    en += score_hairpin_mismatch(fold, hairpin, len)
-    return en
+    return en * fold.model.unit
 end
