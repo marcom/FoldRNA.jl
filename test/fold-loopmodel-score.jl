@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: Hairpin
+using NucleicAcidFold: Hairpin, Intloop
 using Unitful: unit
 
 @testset "score LoopModel" begin
@@ -23,7 +23,7 @@ using Unitful: unit
         @test en == 42.0 * model.unit
 
         # test with different types and hairpin lengths
-        for T in (Float64, Int)
+        for T in (Int, Float64)
             model = LoopModel{T,Tseq,nb,nbp,maxloop}(; alphabet)
             model.bptype = ones(Int, nb, nb)
             for hplen = 0:maxloop+10
@@ -31,6 +31,21 @@ using Unitful: unit
                 fold = Fold(seq, model)
                 hairpin = Hairpin(2, 2 + hplen + 1)
                 @test score(fold, hairpin) isa T
+            end
+        end
+    end
+
+    @testset "intloop" begin
+        for T in (Int, Float64)
+            #      1234567890123456789
+            seq = "GGGGGGGGAAACCCCCCCC"
+            model = LoopModel{T,Int,4,6,30}(alphabet=Alphabet("ACGU"))
+            model.bptype = ones(Int, 4, 4)
+            fold = Fold(seq, model)
+            for i = 1:1, j = 19:19, k = i+1:8, l = 12:j-1
+                intloop = Intloop(i, j, k, l)
+                @test score(fold, intloop) isa T
+                @test unit(energy(fold, intloop)) == unit(model.unit)
             end
         end
     end
