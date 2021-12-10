@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: Hairpin, Intloop
+using NucleicAcidFold: Hairpin, Intloop, Multiloop, Extloop
 using Unitful: unit
 
 @testset "score LoopModel" begin
@@ -47,6 +47,35 @@ using Unitful: unit
                 @test score(fold, intloop) isa T
                 @test unit(energy(fold, intloop)) == unit(model.unit)
             end
+        end
+    end
+
+    @testset "multiloop" begin
+        for T in (Int, Float64)
+            seq = "AGAGAAACAGAAACACA"
+            # ml   .(.(...).(...).).
+            #      123456789012345678
+            model = LoopModel{T,Int,4,6,30}(alphabet=Alphabet("ACGU"))
+            model.bptype = ones(Int, 4, 4)
+            fold = Fold(seq, model)
+            multiloop = Multiloop(bp=Basepair(2,16),
+                                  stems=[Basepair(4,8), Basepair(10,14)])
+            @test score(fold, multiloop) isa T
+            @test unit(energy(fold, multiloop)) == unit(model.unit)
+        end
+    end
+
+    @testset "extloop" begin
+        for T in (Int, Float64)
+            seq = "AGAAACAGAAACG"
+            # ml   .(...).(...).
+            #      1234567890123
+            model = LoopModel{T,Int,4,6,30}(alphabet=Alphabet("ACGU"))
+            model.bptype = ones(Int, 4, 4)
+            fold = Fold(seq, model)
+            extloop = Extloop(stems=[Basepair(2,6), Basepair(8,12)])
+            @test score(fold, extloop) isa T
+            @test unit(energy(fold, extloop)) == unit(model.unit)
         end
     end
 end

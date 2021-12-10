@@ -12,6 +12,27 @@ struct Intloop
     l :: Int
 end
 
+Base.@kwdef struct Extloop
+    stems :: Vector{Basepair} = Basepair[]
+end
+
+Base.@kwdef struct Multiloop
+    bp :: Basepair
+    stems :: Vector{Basepair}
+end
+
+energy(fold::Fold{M}, hairpin::Hairpin) where {M <: LoopModel} =
+    score(fold, hairpin) * fold.model.unit
+
+energy(fold::Fold{M}, intloop::Intloop) where {M <: LoopModel} =
+    score(fold, intloop) * fold.model.unit
+
+energy(fold::Fold{M}, extloop::Extloop) where {M <: LoopModel} =
+    score(fold, extloop) * fold.model.unit
+
+energy(fold::Fold{M}, multiloop::Multiloop) where {M <: LoopModel} =
+    score(fold, multiloop) * fold.model.unit
+
 function score(fold::Fold{M}, hairpin::Hairpin) where {T, M <: LoopModel{T}}
     i, j = hairpin.i, hairpin.j
     m = fold.model
@@ -40,9 +61,6 @@ function score(fold::Fold{M}, hairpin::Hairpin) where {T, M <: LoopModel{T}}
     end
     return s
 end
-
-energy(fold::Fold{M}, hairpin::Hairpin) where {M <: LoopModel} =
-    score(fold, hairpin) * fold.model.unit
 
 function score(fold::Fold{M}, intloop::Intloop) where {T, M <: LoopModel{T}}
     i, j, k, l = intloop.i, intloop.j, intloop.k, intloop.l
@@ -124,9 +142,28 @@ function score(fold::Fold{M}, intloop::Intloop) where {T, M <: LoopModel{T}}
     return s
 end
 
-energy(fold::Fold{M}, intloop::Intloop) where {T, M <: LoopModel{T}} =
-    score(fold, intloop) * fold.model.unit
+function score(fold::Fold{M}, ml::Multiloop) where {T, M <: LoopModel{T}}
+    m = fold.model
+    nstems = length(ml.stems)
+    # contributions for each stem
+    s = sum(score_stem_multiloop(fold, bp.i, bp.j) for bp in ml.stems;
+                init=zero(T))
+    # closing base pair of multiloop
+    i, j = ml.bp.i, ml.bp.j
+    # note: reversed order of j,i
+    s += score_stem_multiloop(fold, j, i)
+    # linear multiloop energy
+    nunpaired = (j - i - 1) - 2 * nstems
+    # (nstems + 1) for the closing base pair of the multiloop
+    s += ( m.multiloop_init
+           + nunpaired * m.multiloop_unpaired
+           + (nstems + 1) * m.multiloop_branch )
+    return s
+end
 
+score(fold::Fold{M}, extloop::Extloop) where {T, M <: LoopModel{T}} =
+    sum(score_stem_extloop(fold, bp.i, bp.j) for bp in extloop.stems;
+            init=zero(T))
 
 # helper functions
 
@@ -171,3 +208,35 @@ score_mismatch_intloop23(fold::Fold{M}, i::Integer, j::Integer, k::Integer, l::I
                          b1::Integer, b2::Integer, b3::Integer, b4::Integer) where {M <: LoopModel} =
     fold.model.mismatch_intloop23[bptype(fold, i, j), fold.seq[b1], fold.seq[b4]] +
         fold.model.mismatch_intloop23[bptype(fold, l, k), fold.seq[b3], fold.seq[b2]]
+
+score_stem_extloop(fold::Fold{M}, i::Integer, j::Integer) where {T, M <: LoopModel{T}} =
+    score_stem_extloop_multiloop(fold, i, j, fold.model.mismatch_extloop)
+
+score_stem_multiloop(fold::Fold{M}, i::Integer, j::Integer) where {T, M <: LoopModel{T}} =
+    score_stem_extloop_multiloop(fold, i, j, fold.model.mismatch_multiloop)
+
+function score_stem_extloop_multiloop(fold::Fold{M}, i::Integer, j::Integer,
+                                      mismatch) where {M <: LoopModel}
+    # stem contributions for extloop and multiloop
+    # here the closing basepair of the stem as well as the left and
+    # right adjacent bases are taken into account
+    # TODO: put index checks and dangle5/3 into en_mismatch, and here
+    #       just call en_mismatch ?
+    n = length(fold)
+    s = score_terminal_nonGC(fold, i, j)
+    has_dangle5 = i > 1
+    has_dangle3 = j < n
+    if has_dangle5 && has_dangle3
+        # dangles on both sides, use mismatch contribution
+        s += score_mismatch(fold, i, j, i-1, j+1, mismatch)
+    elseif has_dangle5 && !has_dangle3
+        # only 5' dangle possible
+        s += score_dangle5(fold, i, j)
+    elseif !has_dangle5 && has_dangle3
+        # only 3' dangle possible
+        s += score_dangle3(fold, i, j)
+    else
+        # no dangles possible
+    end
+    return s
+end
