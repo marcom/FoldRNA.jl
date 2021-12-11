@@ -1,6 +1,6 @@
 using Test
 using NucleicAcidFold
-using NucleicAcidFold: hasbp, isunpaired, isbpopening, isbpclosing
+using NucleicAcidFold: hasbp, isunpaired, isbpopening, isbpclosing, findstems, Basepair
 using NucleicAcidFold: DEFAULT_NBASES, DEFAULT_NBASEPAIRS, UNPAIRED_CHAR, BRACKET_OPEN
 
 const TEST_DBN_SINGLESTRAND = [
@@ -145,6 +145,22 @@ const TEST_DBN = vcat(TEST_DBN_SINGLESTRAND, TEST_DBN_MULTISTRAND)
         @test isvalid(pt; hpmin=3) == true
         @test isvalid(pt; hpmin=4) == false
         @test isvalid(pt; hpmin=10) == false
+    end
+
+    @testset "findstems" begin
+        pt = Pairtable("(...)")
+        @test findstems(pt, 1, 5) == [Basepair(1,5)]
+        @test findstems(pt, 2, 4) == Basepair[]
+        pt = Pairtable("((...))")
+        @test findstems(pt, 1, 7) == [Basepair(1,7)]
+        @test findstems(pt, 2, 6) == [Basepair(2,6)]
+        pt = Pairtable("((...)(...))")
+        @test findstems(pt, 1, 12) == [Basepair(1,12)]
+        @test findstems(pt, 2, 11) == [Basepair(2,6), Basepair(7,11)]
+        @test findstems(pt, 2, 6) == [Basepair(2,6)]
+        @test findstems(pt, 7, 11) == [Basepair(7,11)]
+        @test findstems(pt, 3, 5) == Basepair[]
+        @test findstems(pt, 8, 10) == Basepair[]
     end
 
     @testset "numseq" begin

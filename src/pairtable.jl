@@ -96,6 +96,38 @@ function Base.String(pt::Pairtable)
     return join([ String(s[si.startidx:si.endidx]) for si in pt.strands ], NICK_CHAR)
 end
 
+# find all stems in region i:j
+function findstems(pt::Pairtable, i, j)
+    stems = Basepair[]
+    i >= j && return stems
+    l = r = 0
+    for k = i:j
+        if isbpopening(pt, k)
+            l = k
+            break
+        end
+    end
+    for k = j:-1:i
+        if isbpclosing(pt, k)
+            r = k
+            break
+        end
+    end
+    if l == 0 || r == 0
+        # there are no stems
+    elseif pt.pairs[l] == r
+        # exactly one stem
+        push!(stems, Basepair(l, r))
+    elseif pt.pairs[l] < pt.pairs[r]
+        # two or more stems
+        push!(stems, Basepair(l, pt.pairs[l]))
+        append!(stems, findstems(pt, pt.pairs[l]+1, pt.pairs[r]-1))
+        push!(stems, Basepair(pt.pairs[r], r))
+    else
+        error("bad pairtable, found basepair ($l, $r), pairs = $(pt.pairs)")
+    end
+    return stems
+end
 
 """
     numseq(pt::Pairtable; nbases=DEFAULT_NBASES, nbasepairs=DEFAULT_NBASEPAIRS)
