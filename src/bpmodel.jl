@@ -5,14 +5,14 @@ using DataStructures: DefaultDict
 
 struct BpModel{T}
     name :: String
-    al :: Alphabet
+    alphabet :: Alphabet
     score_bp :: Matrix{T}
     RT :: Quantity
     unit :: Quantity
     hpmin :: Int
 end
-encode(m::BpModel, iter) = encode(m.al, iter)
-decode(m::BpModel, iter) = decode(m.al, iter)
+encode(m::BpModel, iter) = encode(m.alphabet, iter)
+decode(m::BpModel, iter) = decode(m.alphabet, iter)
 
 const RNA_BPMODEL = BpModel{Float64}(
     "RNA Nussinov-Jacobson model (basepairs)",

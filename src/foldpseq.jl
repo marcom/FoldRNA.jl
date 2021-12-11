@@ -9,7 +9,7 @@ struct FoldPseq{T,M}
     model :: M
 end
 
-FoldPseq(seq::AbstractString, model) = FoldPseq(onehot(model.al, seq), model)
+FoldPseq(seq::AbstractString, model) = FoldPseq(onehot(model.alphabet, seq), model)
 
 Base.length(fold::FoldPseq) = size(fold.pseq, 2)
 
@@ -21,7 +21,7 @@ function Base.show(io::IO, mime::MIME"text/plain", fold::FoldPseq)
     show(io, mime, fold.pseq)
 end
 
-String(fold::FoldPseq) = decode(fold.model.al, hotidx(fold.pseq))
+String(fold::FoldPseq) = decode(fold.model.alphabet, hotidx(fold.pseq))
 
 function energy(fold::FoldPseq{T,M}, pt::Pairtable) where {T, Tp, M <: BpModel{Tp}}
     # Note: en has to be of type T (coming from FoldPseq) for
