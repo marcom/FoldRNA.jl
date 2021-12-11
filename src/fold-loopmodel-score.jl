@@ -21,6 +21,52 @@ Base.@kwdef struct Multiloop
     stems :: Vector{Basepair}
 end
 
+Base.@kwdef struct Loop
+    # extloop is Basepair(0,0)
+    bp :: Basepair
+    # length 0: hairpin, length 1: intloop, length >= 2: multiloop
+    stems :: Vector{Basepair} = Basepair[]
+end
+
+Base.@kwdef struct LoopStructure
+    loops :: Vector{Loop} = [Loop(; bp=Basepair(0,0))]
+end
+
+using Printf: @printf
+function Base.show(io::IO, ::MIME"text/plain", ls::LoopStructure)
+    nloop = length(ls.loops)
+    println(io, "LoopStructure with $nloop loop$(nloop == 1 ? "" : "s"):")
+    for loop in ls.loops
+        bp, stems = loop.bp, loop.stems
+        str_stems = join(["($(bp.i), $(bp.j))" for bp in stems], ", ")
+        if bp != Basepair(0,0)
+            @printf(io, "    (%3d, %3d): %s\n", bp.i, bp.j, str_stems)
+        else
+            println(io, "       extloop: $str_stems")
+        end
+    end
+end
+
+function LoopStructure(pt::Pairtable)
+    function addloops_rec!(ls::LoopStructure, loop::Loop)
+        for bp in loop.stems
+            stems = findstems(pt, bp.i+1, bp.j-1)
+            loop = Loop(bp, stems)
+            push!(ls.loops, loop)
+            addloops_rec!(ls, loop)
+        end
+    end
+    n = length(pt)
+    ls = LoopStructure()
+    # extloop
+    stems = findstems(pt, 1, n)
+    append!(ls.loops[1].stems, stems)
+    addloops_rec!(ls, ls.loops[1])
+    return ls
+end
+
+LoopStructure(dbn::AbstractString) = LoopStructure(Pairtable(dbn))
+
 energy(fold::Fold{M}, hairpin::Hairpin) where {M <: LoopModel} =
     score(fold, hairpin) * fold.model.unit
 
@@ -32,6 +78,31 @@ energy(fold::Fold{M}, extloop::Extloop) where {M <: LoopModel} =
 
 energy(fold::Fold{M}, multiloop::Multiloop) where {M <: LoopModel} =
     score(fold, multiloop) * fold.model.unit
+
+function energy(fold::Fold{M}, l::Loop) where {M <: LoopModel}
+    if l.bp.i == 0 && l.bp.j == 0
+        # extloop
+        energy(fold, Extloop(l.stems))
+    elseif length(l.stems) == 0
+        # hairpin
+        energy(fold, Hairpin(l.bp.i, l.bp.j))
+    elseif length(l.stems) == 1
+        # intloop
+        energy(fold, Intloop(l.bp.i, l.bp.j, l.stems[1].i, l.stems[1].j))
+    else
+        # multiloop
+        energy(fold, Multiloop(l.bp, l.stems))
+    end
+end
+
+energy(fold::Fold{M}, ls::LoopStructure) where {M <: LoopModel} =
+    sum(energy(fold, l) for l in ls.loops; init=zero(fold.model.unit))
+
+energy(fold::Fold{M}, pt::Pairtable) where {M <: LoopModel} =
+    energy(fold, LoopStructure(pt))
+
+energy(fold::Fold{M}, dbn::String) where {M <: LoopModel} =
+    energy(fold, Pairtable(pt))
 
 function score(fold::Fold{M}, hairpin::Hairpin) where {T, M <: LoopModel{T}}
     i, j = hairpin.i, hairpin.j

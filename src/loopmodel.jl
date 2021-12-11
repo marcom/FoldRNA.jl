@@ -27,6 +27,7 @@ Base.@kwdef mutable struct LoopModel{T,Tseq,NB,NBP,MAXLOOP}
     # coaxial stacking
     # multiloops              multiloop_*
     # exterior loop           extloop_unpaired
+    name               :: String = ""
     alphabet           :: Alphabet
     bptype             :: MArray{Tuple{NB, NB}, Int} = @MArray zeros(Int, NB, NB)
     maxloop = MAXLOOP
