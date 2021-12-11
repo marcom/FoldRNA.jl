@@ -30,6 +30,7 @@ Base.@kwdef mutable struct LoopModel{T,Tseq,NB,NBP,MAXLOOP}
     name               :: String = ""
     alphabet           :: Alphabet
     bptype             :: MArray{Tuple{NB, NB}, Int} = @MArray zeros(Int, NB, NB)
+    hpmin              :: Int = 3
     maxloop = MAXLOOP
     stack              :: MArray{Tuple{NBP, NBP}, T} = @MArray zeros(T, NBP, NBP)
     hairpin_init       :: OffsetArray{T} = OffsetArray(zeros(T, MAXLOOP+1), 0:MAXLOOP)

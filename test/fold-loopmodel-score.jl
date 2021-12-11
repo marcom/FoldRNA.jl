@@ -51,17 +51,25 @@ using Unitful: unit
     end
 
     @testset "multiloop" begin
-        for T in (Int, Float64)
-            seq = "AGAGAAACAGAAACACA"
-            # ml   .(.(...).(...).).
-            #      123456789012345678
-            model = LoopModel{T,Int,4,6,30}(alphabet=Alphabet("ACGU"))
-            model.bptype = ones(Int, 4, 4)
-            fold = Fold(seq, model)
-            multiloop = Multiloop(bp=Basepair(2,16),
-                                  stems=[Basepair(4,8), Basepair(10,14)])
-            @test score(fold, multiloop) isa T
-            @test unit(energy(fold, multiloop)) == unit(model.unit)
+        TESTS_MULTILOOP = [
+            # 12345678901234567
+            ("AGAGAAACAGAAACACA", Multiloop(bp=Basepair(2,16), stems=[Basepair(4,8), Basepair(10,14)])),
+            # .(.(...).(...).).
+            ("GAAGAAACAGAAACAAC", Multiloop(bp=Basepair(1,17), stems=[Basepair(4,8), Basepair(10,14)])),
+            # (..(...).(...)..)
+            ("AGAGAAACAGAAACAAC", Multiloop(bp=Basepair(2,17), stems=[Basepair(4,8), Basepair(10,14)])),
+            # .(.(...).(...)..)
+            ("GAAGAAACAGAAACACA", Multiloop(bp=Basepair(1,16), stems=[Basepair(4,8), Basepair(10,14)])),
+            # (..(...).(...).).
+        ]
+        for (seq, multiloop) in TESTS_MULTILOOP
+            for T in (Int, Float64)
+                model = LoopModel{T,Int,4,6,30}(alphabet=Alphabet("ACGU"))
+                model.bptype = ones(Int, 4, 4)
+                fold = Fold(seq, model)
+                @test score(fold, multiloop) isa T
+                @test unit(energy(fold, multiloop)) == unit(model.unit)
+            end
         end
     end
 

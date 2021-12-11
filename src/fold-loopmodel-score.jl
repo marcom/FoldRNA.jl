@@ -295,8 +295,8 @@ function score_stem_extloop_multiloop(fold::Fold{M}, i::Integer, j::Integer,
     #       just call en_mismatch ?
     n = length(fold)
     s = score_terminal_nonGC(fold, i, j)
-    has_dangle5 = i > 1
-    has_dangle3 = j < n
+    has_dangle5 = min(i,j) > 1
+    has_dangle3 = max(i,j) < n
     if has_dangle5 && has_dangle3
         # dangles on both sides, use mismatch contribution
         s += score_mismatch(fold, i, j, i-1, j+1, mismatch)
@@ -311,3 +311,10 @@ function score_stem_extloop_multiloop(fold::Fold{M}, i::Integer, j::Integer,
     end
     return s
 end
+
+# TODO: min(i,j) or i, max(i,j) or j ???
+score_dangle5(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
+    fold.model.dangle5[bptype(fold, i, j), fold.seq[min(i,j)-1]]
+
+score_dangle3(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
+    fold.model.dangle3[bptype(fold, i, j), fold.seq[max(i,j)+1]]
