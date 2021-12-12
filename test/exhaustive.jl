@@ -4,6 +4,9 @@ using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
     exhaustive_bpp_partfn, exhaustive_design
 
 @testset "exhaustive" begin
+
+    # BpModel
+
     @testset "mfe (bpmodel)" begin
         seq = "GGGAAACCC"
         model = RNA_BPMODEL
@@ -66,6 +69,8 @@ using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
         end
     end
 
+    # LoopModel
+
     @testset "mfe (loopmodel)" begin
         model = LoopModel{Float64,Int,4,6,30}(name="Test model", alphabet=Alphabet("ACGU"))
         model.bptype = ones(Int, 4, 4)
@@ -88,6 +93,22 @@ using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
             @test exhaustive_partfn(T, fold) isa T
             @test exhaustive_partfn(fold) isa Quantity
         end
+        # TODO: compare to cky dyn prog calc
     end
-    # TODO: compare to cky dyn prog calc
+
+    @testset "bpp_partfn (loopmodel)" begin
+        model = LoopModel{Float64,Int,4,6,30}(name="Test model", alphabet=Alphabet("ACGU"))
+        model.bptype = ones(Int, 4, 4)
+        T = BigFloat
+        for seq in ["G", "GGGAAACCC", "GAGAAACUUUCCACG"]
+            n = length(seq)
+            fold = Fold(seq, model)
+            mRTlogQ, p = exhaustive_bpp_partfn(fold)
+            @test mRTlogQ isa Quantity
+            @test p isa Matrix
+            @test size(p) == (n, n)
+            @test all(x -> 0.0 <= x <= 1.0, p)
+            # TODO: compare to cky dyn prog calc
+        end
+    end
 end
