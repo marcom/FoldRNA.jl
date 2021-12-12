@@ -31,7 +31,11 @@ Base.@kwdef mutable struct LoopModel{T,Tseq,NB,NBP,MAXLOOP}
     alphabet           :: Alphabet
     bptype             :: MArray{Tuple{NB, NB}, Int} = @MArray zeros(Int, NB, NB)
     hpmin              :: Int = 3
-    maxloop = MAXLOOP
+    maxloop            :: Int = MAXLOOP
+    RT                 :: Quantity = RT37
+    # energy unit of parameters
+    unit :: Quantity = 1.0u"kcal/mol"
+
     stack              :: MArray{Tuple{NBP, NBP}, T} = @MArray zeros(T, NBP, NBP)
     hairpin_init       :: OffsetArray{T} = OffsetArray(zeros(T, MAXLOOP+1), 0:MAXLOOP)
     bulge_init         :: OffsetArray{T} = OffsetArray(zeros(T, MAXLOOP+1), 0:MAXLOOP)
@@ -58,8 +62,6 @@ Base.@kwdef mutable struct LoopModel{T,Tseq,NB,NBP,MAXLOOP}
     terminal_nonGC     :: T = zero(T)
     terminal_nonGC_bp  :: MArray{Tuple{NBP}, T} = @MArray zeros(T, NBP)
     lxc                :: Float64 = zero(Float64)
-    # energy unit of parameters
-    unit :: Quantity = 1.0u"kcal/mol"
 end
 
 encode(m::LoopModel, iter) = encode(m.alphabet, iter)
