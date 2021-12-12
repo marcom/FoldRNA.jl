@@ -76,5 +76,18 @@ using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
             @test unit(en_mfe_ex) == unit(model.unit)
             @test pt_mfe_ex isa Pairtable
         end
+        # TODO: compare to cky dyn prog calc
     end
+
+    @testset "partfn (loopmodel)" begin
+        model = LoopModel{Float64,Int,4,6,30}(name="Test model", alphabet=Alphabet("ACGU"))
+        model.bptype = ones(Int, 4, 4)
+        seq = "GGGAAACCC"
+        for T in (Float64, BigFloat, LogSR{Float64})
+            fold = Fold(seq, model)
+            @test exhaustive_partfn(T, fold) isa T
+            @test exhaustive_partfn(fold) isa Quantity
+        end
+    end
+    # TODO: compare to cky dyn prog calc
 end
