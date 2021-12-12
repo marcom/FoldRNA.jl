@@ -65,4 +65,16 @@ using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
             @test 0.0 <= p <= 1.0
         end
     end
+
+    @testset "mfe (loopmodel)" begin
+        model = LoopModel{Float64,Int,4,6,30}(name="Test model", alphabet=Alphabet("ACGU"))
+        model.bptype = ones(Int, 4, 4)
+        for _ = 1:3
+            seq = randseq(13)
+            fold = Fold(seq, model)
+            en_mfe_ex, pt_mfe_ex = exhaustive_mfe(fold)
+            @test unit(en_mfe_ex) == unit(model.unit)
+            @test pt_mfe_ex isa Pairtable
+        end
+    end
 end
