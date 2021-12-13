@@ -1,10 +1,10 @@
 using Test
-using NucleicAcidFold: Fold, RNA_BPMODEL, Pairtable, energy, mfe, partfn,
-    prob_of_struct
+using NucleicAcidFold: Fold, Pairtable, energy, mfe, partfn, prob_of_struct,
+    RNA_BPMODEL
 using Unitful: Quantity
 
 @testset "Fold" begin
-    @testset "for BpModel" begin
+    @testset "BpModel" begin
         seq = "GGGAAACCC"
         dbn = "(((...)))"
         pt = Pairtable(dbn)
@@ -19,10 +19,13 @@ using Unitful: Quantity
         @test prob_of_struct(fold, dbn) isa Float64
         @test prob_of_struct(fold, pt) isa Float64
     end
-    @testset "for LoopModel" begin
+    @testset "LoopModel" begin
         seq = "GGGAAACCC"
+        dbn = "(((...)))"
         model = LoopModel{Float64,Int,4,6,30}(alphabet=Alphabet("ACGU"))
+        model.bptype .= 1
         fold = Fold(seq, model)
         @test bptype(fold, 1, 9) isa Int
+        @test energy(fold, dbn) isa Quantity
     end
 end

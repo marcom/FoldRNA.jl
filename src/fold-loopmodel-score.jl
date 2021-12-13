@@ -102,7 +102,7 @@ energy(fold::Fold{M}, pt::Pairtable) where {M <: LoopModel} =
     energy(fold, LoopStructure(pt))
 
 energy(fold::Fold{M}, dbn::String) where {M <: LoopModel} =
-    energy(fold, Pairtable(pt))
+    energy(fold, Pairtable(dbn))
 
 function score(fold::Fold{M}, hairpin::Hairpin) where {T, M <: LoopModel{T}}
     i, j = hairpin.i, hairpin.j
