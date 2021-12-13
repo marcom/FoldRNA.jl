@@ -24,6 +24,9 @@ include("readparam-viennarna.jl")
 
 # LoopModel parameters from ViennaRNA
 import ViennaRNA_jll
+# only export free energy params for now, not the enthalpies
+export RNA_TURNER1999, RNA_TURNER2004, RNA_ANDRONESCU2007, RNA_LANGDON2018
+
 const RNA_TURNER1999, RNA_TURNER1999_DH = readparam_viennarna(
     joinpath(ViennaRNA_jll.artifact_dir, "share", "ViennaRNA", "rna_turner1999.par")
 )

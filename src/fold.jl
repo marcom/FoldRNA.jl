@@ -8,7 +8,7 @@ struct Fold{M}
     model :: M
 end
 
-Fold(seq::AbstractString, model) = Fold(encode(model, seq), model)
+Fold(seq::AbstractString, model=RNA_TURNER2004) = Fold(encode(model, seq), model)
 
 Base.length(fold::Fold) = length(fold.seq)
 
