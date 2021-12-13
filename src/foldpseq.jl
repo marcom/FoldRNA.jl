@@ -68,7 +68,7 @@ function onehot(::Type{T}, items, arr) where {T}
     nitem = length(items)
     t = zeros(T, nitem, n)
     for i = 1:n
-        k = findfirst(arr[i], items)
+        k = findfirst(isequal(arr[i]), items)
         isnothing(k) && error("illegal item $(arr[i]) at position $i")
         t[k, i] = one(T)
     end
