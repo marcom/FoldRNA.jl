@@ -36,5 +36,8 @@ const RNA_ANDRONESCU2007, RNA_ANDRONESCU2007_DH = readparam_viennarna(
 const RNA_LANGDON2018, RNA_LANGDON2018_DH = readparam_viennarna(
     joinpath(ViennaRNA_jll.artifact_dir, "share", "ViennaRNA", "rna_langdon2018.par")
 )
+# TODO: DNA parameters maybe have some issues? (see comments in
+#       ViennaRNA dna_*.par files).  Also: are these DNA params
+#       measured at 37 deg Celsius?
 
 end # module

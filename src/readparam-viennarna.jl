@@ -1,11 +1,3 @@
-"""
-    Read nearest-neighbour energy parameter file in ViennaRNA RNAfold
-    v2.0 format.
-
-    Energy values are in units of 100 * kcal/mol.  Parameters are
-    assumed to be at 37 degrees Celsius, there is nothing in the
-    parameter file to indicate temperature.
-"""
 function readparam_viennarna_to_dict(filename::AbstractString;
                                      INF = 10_000_000,
                                      DEF = -50)
@@ -97,21 +89,38 @@ function readparam_viennarna_to_dict(filename::AbstractString;
     return paramdict
 end
 
-function readparam_viennarna(filepath::AbstractString)
-    # TODO: move these functions to a more appropriate file?
-    DEFAULT_LXC = 107.856
-    DEFAULT_LXC_DH = 0.0
+"""
+    readparam_viennarna(filepath; options...)
+
+Read nearest-neighbour energy parameter file in ViennaRNA RNAfold v2.0
+format.
+
+Some implicit defaults for the ViennaRNA parameter file format:
+- energy values are in units of 0.01 * kcal/mol
+- parameters are assumed to be at 37 degrees Celsius
+These can be configured with keyword arguments.
+
+Note: for the intloop22 tables (named `int22` and `int22_enthalpies`
+in the ViennaRNA parameter file), the tables are assumed to not
+consider bases or basepairs that contain an `'N'`.
+"""
+function readparam_viennarna(filepath::AbstractString;
+                             # ViennaRNA file format defaults
+                             NUMTYPE = Int,
+                             SEQTYPE = Int,
+                             MAXLOOPS = 30,
+                             unit = 0.01u"kcal/mol",
+                             DEFAULT_LXC = 107.856,
+                             DEFAULT_LXC_DH = 0.0,
+                             hpmin = 3,
+                             RT = RT37,
+                             # file_bases, file_basepairs: base and basepair ordering as
+                             # used in the ViennaRNA RNAfold v2.0 file format
+                             file_bases = ['N', 'A', 'C', 'G', 'U'],
+                             file_basepairs = [('C','G'), ('G','C'), ('G','U'), ('U','G'), ('A','U'), ('U','A'), ('N','N')],
+                             )
     isgcbp(bp::Tuple{Char,Char}) = bp == ('G','C') || bp == ('C','G')
     reshape_rowmajor(A, dims) = permutedims(reshape(A, reverse(dims)), length(dims):-1:1)
-    # ViennaRNA file format defaults and data order
-    NUMTYPE = Int
-    SEQTYPE = Int
-    MAXLOOPS = 30
-    unit = 0.01u"kcal/mol"
-    # file_bases, file_basepairs: base and basepair ordering as
-    # used in the ViennaRNA RNAfold v2.0 file format
-    file_bases = ['N', 'A', 'C', 'G', 'U']
-    file_basepairs = [('C','G'), ('G','C'), ('G','U'), ('U','G'), ('A','U'), ('U','A'), ('N','N')]
     nb = length(file_bases)
     nbp = length(file_basepairs)
 
@@ -122,11 +131,22 @@ function readparam_viennarna(filepath::AbstractString)
     # containing N (probably to conserve space).
     out_bases = ['A', 'C', 'G', 'U', 'N']
     out_basepairs = [('C','G'), ('G','C'), ('G','U'), ('U','G'), ('A','U'), ('U','A'), ('N','N')]
-
     alphabet = Alphabet("RNA", out_bases)
-    deltaG = LoopModel{NUMTYPE,SEQTYPE,nb,nbp,MAXLOOPS}(alphabet=alphabet, unit=unit, name=basename(filepath))
-    deltaH = LoopModel{NUMTYPE,SEQTYPE,nb,nbp,MAXLOOPS}(alphabet=alphabet, unit=unit, name=basename(filepath))
-    # TODO: set hpmin, RT
+    deltaG = LoopModel{NUMTYPE,SEQTYPE,nb,nbp,MAXLOOPS}(
+        alphabet = alphabet,
+        unit = unit,
+        name = basename(filepath),
+        hpmin = hpmin,
+        RT = RT
+    )
+    deltaH = LoopModel{NUMTYPE,SEQTYPE,nb,nbp,MAXLOOPS}(
+        alphabet = alphabet,
+        unit = unit,
+        name = basename(filepath),
+        hpmin = hpmin,
+        RT = RT
+    )
+    # set bptype
     for (i, (a,b)) in enumerate(out_basepairs)
         ka = first(encode(alphabet, a))
         kb = first(encode(alphabet, b))
