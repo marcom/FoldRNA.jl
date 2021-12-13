@@ -9,4 +9,6 @@ using NucleicAcidFold: Alphabet, encode, decode
     @test decode(al, [3, 3, 2, 2, 4, 4, 1, 1]) == "GGCCUUAA"
     @test Alphabet("ABC") == Alphabet("", "ABC")
     @test Alphabet(collect("ABC")) == Alphabet("", "ABC")
+    @test encode(al, 'G') == [3]
+    @test encode(al, ['A', 'G']) == [1, 3]
 end
