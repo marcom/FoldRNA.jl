@@ -1,5 +1,7 @@
 # score, energy for Fold{LoopModel}
 
+using Printf: @printf
+
 struct Hairpin
     i :: Int
     j :: Int
@@ -28,22 +30,25 @@ Base.@kwdef struct Loop
     stems :: Vector{Basepair} = Basepair[]
 end
 
+function Base.show(io::IO, ::MIME"text/plain", loop::Loop)
+    bp, stems = loop.bp, loop.stems
+    str_stems = join(["($(bp.i), $(bp.j))" for bp in stems], ", ")
+    if bp != Basepair(0,0)
+        @printf(io, "    (%3d,%3d): %s\n", bp.i, bp.j, str_stems)
+    else
+        println(io, "      extloop: $str_stems")
+    end
+end
+
 Base.@kwdef struct LoopStructure
     loops :: Vector{Loop} = [Loop(; bp=Basepair(0,0))]
 end
 
-using Printf: @printf
-function Base.show(io::IO, ::MIME"text/plain", ls::LoopStructure)
+function Base.show(io::IO, mime::MIME"text/plain", ls::LoopStructure)
     nloop = length(ls.loops)
     println(io, "LoopStructure with $nloop loop$(nloop == 1 ? "" : "s"):")
     for loop in ls.loops
-        bp, stems = loop.bp, loop.stems
-        str_stems = join(["($(bp.i), $(bp.j))" for bp in stems], ", ")
-        if bp != Basepair(0,0)
-            @printf(io, "    (%3d, %3d): %s\n", bp.i, bp.j, str_stems)
-        else
-            println(io, "       extloop: $str_stems")
-        end
+        show(io, mime, loop)
     end
 end
 
@@ -79,30 +84,38 @@ energy(fold::Fold{M}, extloop::Extloop) where {M <: LoopModel} =
 energy(fold::Fold{M}, multiloop::Multiloop) where {M <: LoopModel} =
     score(fold, multiloop) * fold.model.unit
 
-function energy(fold::Fold{M}, l::Loop) where {M <: LoopModel}
-    if l.bp.i == 0 && l.bp.j == 0
+function energy(fold::Fold{M}, loop::Loop; verbose::Bool=false) where {M <: LoopModel}
+    bp, stems = loop.bp, loop.stems
+    if bp.i == 0 && bp.j == 0
         # extloop
-        energy(fold, Extloop(l.stems))
-    elseif length(l.stems) == 0
+        en = energy(fold, Extloop(stems))
+    elseif length(stems) == 0
         # hairpin
-        energy(fold, Hairpin(l.bp.i, l.bp.j))
-    elseif length(l.stems) == 1
+        en = energy(fold, Hairpin(bp.i, bp.j))
+    elseif length(stems) == 1
         # intloop
-        energy(fold, Intloop(l.bp.i, l.bp.j, l.stems[1].i, l.stems[1].j))
+        en = energy(fold, Intloop(bp.i, bp.j, stems[1].i, stems[1].j))
     else
         # multiloop
-        energy(fold, Multiloop(l.bp, l.stems))
+        en = energy(fold, Multiloop(bp, stems))
     end
+    if verbose
+        iobuf = IOBuffer()
+        show(iobuf, MIME"text/plain"(), loop)
+        str_loop = chomp(String(take!(iobuf)))
+        @printf("%-30s    en = %s\n", str_loop, en)
+    end
+    return en
 end
 
-energy(fold::Fold{M}, ls::LoopStructure) where {M <: LoopModel} =
-    sum(energy(fold, l) for l in ls.loops; init=zero(fold.model.unit))
+energy(fold::Fold{M}, ls::LoopStructure; verbose::Bool=false) where {M <: LoopModel} =
+    sum(energy(fold, l; verbose) for l in ls.loops; init=zero(fold.model.unit))
 
-energy(fold::Fold{M}, pt::Pairtable) where {M <: LoopModel} =
-    energy(fold, LoopStructure(pt))
+energy(fold::Fold{M}, pt::Pairtable; verbose::Bool=false) where {M <: LoopModel} =
+    energy(fold, LoopStructure(pt); verbose)
 
-energy(fold::Fold{M}, dbn::String) where {M <: LoopModel} =
-    energy(fold, Pairtable(dbn))
+energy(fold::Fold{M}, dbn::String; verbose::Bool=false) where {M <: LoopModel} =
+    energy(fold, Pairtable(dbn); verbose)
 
 function score(fold::Fold{M}, hairpin::Hairpin) where {T, M <: LoopModel{T}}
     i, j = hairpin.i, hairpin.j
