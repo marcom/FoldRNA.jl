@@ -10,6 +10,11 @@ using NucleicAcidFold: LogSR
     @test (x * y) isa typeof(x)
     @test (x / y) isa typeof(x)
 
+    # test Base.show
+    iobuf = IOBuffer()
+    show(iobuf, MIME"text/plain"(), x)
+    @test length(take!(iobuf)) > 0
+
     for T in (Float32, Float64, BigFloat)
         @test LogSR{T} <: Number
         s = LogSR{T}(T(4.2069))

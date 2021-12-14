@@ -30,6 +30,8 @@ Base.@kwdef struct Loop
     stems :: Vector{Basepair} = Basepair[]
 end
 
+Base.:(==)(a::Loop, b::Loop) = (a.bp == b.bp && a.stems == b.stems)
+
 function Base.show(io::IO, ::MIME"text/plain", loop::Loop)
     bp, stems = loop.bp, loop.stems
     str_stems = join(["($(bp.i), $(bp.j))" for bp in stems], ", ")

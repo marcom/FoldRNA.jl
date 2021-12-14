@@ -16,6 +16,10 @@ using Unitful: Quantity
     @test prob_of_struct(fold, dbn) isa Float64
     @test prob_of_struct(fold, pt) isa Float64
 
+    iobuf = IOBuffer()
+    show(iobuf, MIME"text/plain"(), fold)
+    @test length(take!(iobuf)) > 0
+
     @testset "onehot" begin
         T = Float16
         chars = "ABC"
