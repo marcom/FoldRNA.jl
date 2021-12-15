@@ -21,6 +21,7 @@ end
 bptype(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
     bptype(fold.model, fold.seq[i], fold.seq[j])
 
+canbp(fold::Fold{M}, i, j) where {M <: LoopModel} = bptype(fold, i, j) != 0
 
 function energy(fold::Fold{M}, pt::Pairtable) where {T, M <: BpModel{T}}
     # TODO: should we check here if any base-pair distance is smaller

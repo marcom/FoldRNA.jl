@@ -31,6 +31,7 @@ function bpmodel(::Type{T}, seq; hpmin::Integer=3, bp::Function) where {T}
     return bpmodel(A, seq; hpmin, bp)
 end
 
+# bpmodel CKY algorithm
 function bpmodel(A::OffsetMatrix{T}, seq; hpmin::Integer=3, bp::Function) where {T}
     # TODO: check that indices of seq are 1:n
     n = length(seq)

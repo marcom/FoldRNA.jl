@@ -232,23 +232,25 @@ function score(fold::Fold{M}, ml::Multiloop) where {T, M <: LoopModel{T}}
     m = fold.model
     nstems = length(ml.stems)
     # contributions for each stem
-    s = sum(score_stem_multiloop(fold, bp.i, bp.j) for bp in ml.stems;
+    s = sum(score_multiloop_stem(fold, bp.i, bp.j) for bp in ml.stems;
                 init=zero(T))
     # closing base pair of multiloop
     i, j = ml.bp.i, ml.bp.j
     # note: reversed order of j,i
-    s += score_stem_multiloop(fold, j, i)
+    s += score_multiloop_stem(fold, j, i)
     # linear multiloop energy
     nunpaired = (j - i - 1) - 2 * nstems
     # (nstems + 1) for the closing base pair of the multiloop
+    # TODO: score_multiloop_unpaired
     s += ( m.multiloop_init
            + nunpaired * m.multiloop_unpaired
            + (nstems + 1) * m.multiloop_branch )
     return s
 end
 
+# TODO: score_extloop_unpaired
 score(fold::Fold{M}, extloop::Extloop) where {T, M <: LoopModel{T}} =
-    sum(score_stem_extloop(fold, bp.i, bp.j) for bp in extloop.stems;
+    sum(score_extloop_stem(fold, bp.i, bp.j) for bp in extloop.stems;
             init=zero(T))
 
 # helper functions
@@ -295,11 +297,17 @@ score_mismatch_intloop23(fold::Fold{M}, i::Integer, j::Integer, k::Integer, l::I
     fold.model.mismatch_intloop23[bptype(fold, i, j), fold.seq[b1], fold.seq[b4]] +
         fold.model.mismatch_intloop23[bptype(fold, l, k), fold.seq[b3], fold.seq[b2]]
 
-score_stem_extloop(fold::Fold{M}, i::Integer, j::Integer) where {T, M <: LoopModel{T}} =
+score_extloop_stem(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
     score_stem_extloop_multiloop(fold, i, j, fold.model.mismatch_extloop)
 
-score_stem_multiloop(fold::Fold{M}, i::Integer, j::Integer) where {T, M <: LoopModel{T}} =
+score_extloop_unpaired(fold::Fold{M}, nunpaired::Integer) where {M <: LoopModel} =
+    nunpaired * fold.model.extloop_unpaired
+
+score_multiloop_stem(fold::Fold{M}, i::Integer, j::Integer) where {T, M <: LoopModel{T}} =
     score_stem_extloop_multiloop(fold, i, j, fold.model.mismatch_multiloop)
+
+score_multiloop_unpaired(fold::Fold{M}, nunpaired::Integer) where {M <: LoopModel} =
+    nunpaired * fold.model.multiloop_unpaired
 
 function score_stem_extloop_multiloop(fold::Fold{M}, i::Integer, j::Integer,
                                       mismatch) where {M <: LoopModel}

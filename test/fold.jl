@@ -1,6 +1,6 @@
 using Test
 using NucleicAcidFold: Fold, Pairtable, energy, mfe, partfn, prob_of_struct,
-    RNA_BPMODEL, Loop, LoopStructure
+    RNA_BPMODEL, Loop, LoopStructure, canbp
 using Unitful: Quantity
 
 @testset "Fold" begin
@@ -29,6 +29,7 @@ using Unitful: Quantity
         model.bptype .= 1
         fold = Fold(seq, model)
         @test bptype(fold, 1, 9) isa Int
+        @test canbp(fold, 1, 9)
         @test energy(fold, dbn) isa Quantity
         iobuf = IOBuffer()
         show(iobuf, MIME"text/plain"(), fold)
