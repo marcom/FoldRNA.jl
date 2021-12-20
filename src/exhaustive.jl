@@ -52,7 +52,7 @@ end
 function exhaustive_bpp_partfn(fold::Fold)
     Q, p = exhaustive_bpp_partfn(LogSR{Float64}, fold)
     logQ = Q.val
-    return - fold.model.RT * logQ, map(x -> exp(x.val), p)
+    return - fold.model.RT * logQ, map(x -> float(x), p)
 end
 
 

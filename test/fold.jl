@@ -15,7 +15,9 @@ using Unitful: Quantity
         @test energy(fold, dbn) isa Quantity
         @test energy(fold, pt) isa Quantity
         @test mfe(fold) == -9.0u"kcal/mol"
-        @test partfn(fold) isa Quantity
+        q = partfn(fold)
+        @test q isa Quantity
+        @test ! isinf(q)
         @test prob_of_struct(fold, dbn) isa Float64
         @test prob_of_struct(fold, pt) isa Float64
         iobuf = IOBuffer()
