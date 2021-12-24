@@ -23,6 +23,10 @@ bptype(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
 
 canbp(fold::Fold{M}, i, j) where {M <: LoopModel} = bptype(fold, i, j) != 0
 
+
+# functions for ::Fold{BpModel}
+# energy, mfe, partfn, bpp, prob_of_struct
+
 function energy(fold::Fold{M}, pt::Pairtable) where {T, M <: BpModel{T}}
     # TODO: should we check here if any base-pair distance is smaller
     #       than hpmin?
@@ -75,3 +79,7 @@ end
 
 prob_of_struct(fold::Fold, dbn::AbstractString) =
     prob_of_struct(fold, Pairtable(dbn))
+
+
+# functions for ::Fold{LoopModel}
+# energy, mfe, partfn, bpp, prob_of_struct
