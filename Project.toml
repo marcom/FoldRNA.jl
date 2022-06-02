@@ -11,11 +11,17 @@ OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 ResumableFunctions = "c5292f4c-5179-55e1-98c5-05642aab7184"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
-UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 ViennaRNA_jll = "b7a990de-7fa3-5a2e-8a39-d875e4dafecd"
 
 [compat]
+DataStructures = "0.18"
+LogExpFunctions = "0.3"
+OffsetArrays = "1.12"
+ResumableFunctions = "0.6"
+StaticArrays = "1.4.4"
+Unitful = "1.11"
+ViennaRNA_jll = "2.5.0"
 julia = "1.6"
 
 [extras]
