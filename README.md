@@ -2,8 +2,11 @@
 
 This is an experimental implementation of nucleic acid secondary
 structure prediction and analysis algorithms in Julia.  Nothing here
-is guaranteed to work, but please open an issue if you are interested
-in working on anything.
+is guaranteed to work.
 
-If you are looking for a more mature library in Julia i recommend you
-look at [ViennaRNA.jl](https://github.com/marcom/ViennaRNA.jl).
+## Related packages
+
+If you are looking for more mature libraries in Julia please take a look at:
+
+- [ViennaRNA.jl](https://github.com/marcom/ViennaRNA.jl).
+- [LinearFold.jl](https://github.com/marcom/LinearFold.jl).
