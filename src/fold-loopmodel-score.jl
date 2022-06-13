@@ -135,7 +135,7 @@ function score(fold::Fold{M}, hairpin::Hairpin) where {T, M <: LoopModel{T}}
             s += m.hairpin_init[len]
         else
             # large loops get extrapolated
-            s += m.hairpin_init[m.maxloop] + round(Int, m.lxc * log(len / m.maxloop))
+            s += m.hairpin_init[m.maxloop] + trunc(Int, m.lxc * log(len / m.maxloop))
         end
         # mismatch interior of closing basepair
         # TODO: hardcoded 3, make it part of LoopModel ?
@@ -169,7 +169,7 @@ function score(fold::Fold{M}, intloop::Intloop) where {T, M <: LoopModel{T}}
             s = m.bulge_init[len]
         else
             # large loops get extrapolated
-            s = m.bulge_init[m.maxloop] + round(Int, m.lxc * log(len / m.maxloop))
+            s = m.bulge_init[m.maxloop] + trunc(Int, m.lxc * log(len / m.maxloop))
         end
         if n1 == 1 || n2 == 1
             # short 0×1 bulge loop, so it gets stacking
@@ -198,7 +198,7 @@ function score(fold::Fold{M}, intloop::Intloop) where {T, M <: LoopModel{T}}
                 s = m.intloop_init[len]
             else
                 # large loops get extrapolated
-                s = m.intloop_init[m.maxloop] + round(Int, m.lxc * log(len / m.maxloop))
+                s = m.intloop_init[m.maxloop] + trunc(Int, m.lxc * log(len / m.maxloop))
             end
             s += min(m.ninio_max, abs(n1-n2) * m.ninio_m)
             s += score_mismatch_intloop1n(fold, i, j, k, l, b1, b2, b3, b4)
@@ -219,7 +219,7 @@ function score(fold::Fold{M}, intloop::Intloop) where {T, M <: LoopModel{T}}
                 s = m.intloop_init[len]
             else
                 # large loops get extrapolated
-                s = m.intloop_init[m.maxloop] + round(Int, m.lxc * log(len / m.maxloop))
+                s = m.intloop_init[m.maxloop] + trunc(Int, m.lxc * log(len / m.maxloop))
             end
             s += min(m.ninio_max, abs(n1-n2) * m.ninio_m)
             s += score_mismatch_intloop(fold, i, j, k, l, b1, b2, b3, b4)
