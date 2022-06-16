@@ -83,3 +83,10 @@ prob_of_struct(fold::Fold, dbn::AbstractString) =
 
 # functions for ::Fold{LoopModel}
 # energy, mfe, partfn, bpp, prob_of_struct
+
+# TODO: backtrack missing
+function mfe(fold::Fold{M}) where {T, M <: LoopModel{T}}
+    A, Ab, Am, Am1 = loopmodel(MinPlusSR{T}, fold; hpmin=fold.model.hpmin, maxintloop=-1)
+    en_mfe = A[1, length(fold)].val
+    return fold.model.unit * en_mfe
+end

@@ -108,7 +108,7 @@ function loopmodel(T::Type, fold; hpmin::Integer=3, maxintloop::Integer=-1)
                             # <=> l = k + j - i - 2 - maxintloop
                             if loopsize <= maxintloop
                                 if canbp(fold, k, l)
-                                    Ab[i,j] += score_intloop(fold, i, j, k, l) * Ab[k,l]
+                                    Ab[i,j] += score(fold, Intloop(i, j, k, l)) * Ab[k,l]
                                 end
                             else
                                 println("in loopmodel, intloop: unnecessary iteration: i = $i, j= $j, k = $k, l = $l")
@@ -119,14 +119,14 @@ function loopmodel(T::Type, fold; hpmin::Integer=3, maxintloop::Integer=-1)
                     for k = i+1:j-h-2
                         for l = k+h+1:j-1
                             if canbp(fold, k, l)
-                                Ab[i,j] += score_intloop(fold, i, j, k, l) * Ab[k,l]
+                                Ab[i,j] += score(fold, Intloop(i, j, k, l)) * Ab[k,l]
                             end
                         end
                     end
                 end
                 # case: (i,j) closes multiloop
                 for k = i+h+2:j-h-3
-                    Ab[i,j] += Am[i+1,k] * Am1[k+1,j-1] * score_multiloop_closing_stem(fold, i, j)
+                    Ab[i,j] += Am[i+1,k] * Am1[k+1,j-1] * score_multiloop_closing_bp(fold, i, j)
                 end
             end
 

@@ -235,16 +235,11 @@ function score(fold::Fold{M}, ml::Multiloop) where {T, M <: LoopModel{T}}
     n = length(fold)
     # contributions for each stem
     for bp in ml.stems
-        i, j = bp.i, bp.j
-        dangle5 = i > 1 ? i-1 : -1
-        dangle3 = j < n ? j+1 : -1
-        s += score_multiloop_stem(fold, i, j, dangle5, dangle3)
+        s += score_multiloop_stem(fold, bp.i, bp.j)
     end
     # closing base pair of multiloop
     i, j = ml.bp.i, ml.bp.j
-    dangle5 = i + 1
-    dangle3 = j - 1
-    s += score_multiloop_closing_bp(fold, i, j, dangle5, dangle3)
+    s += score_multiloop_closing_bp(fold, i, j)
     # linear multiloop energy
     nunpaired = (j - i - 1) - 2 * nstems
     # Note: (nstems + 1) for the closing base pair of the multiloop
@@ -321,14 +316,21 @@ score_extloop_stem(fold::Fold{M}, i::Integer, j::Integer,
 score_extloop_unpaired(fold::Fold{M}, nunpaired::Integer) where {M <: LoopModel} =
     nunpaired * fold.model.extloop_unpaired
 
-score_multiloop_stem(fold::Fold{M}, i::Integer, j::Integer,
-                     dangle5::Integer, dangle3::Integer) where {T, M <: LoopModel{T}} =
-    score_stem_extloop_multiloop(fold, i, j, dangle5, dangle3, fold.model.mismatch_multiloop)
+function score_multiloop_stem(fold::Fold{M}, i::Integer, j::Integer) where {T, M <: LoopModel{T}}
+    n = length(fold)
+    dangle5 = i > 1 ? i-1 : -1
+    dangle3 = j < n ? j+1 : -1
+    return score_stem_extloop_multiloop(fold, i, j, dangle5, dangle3,
+                                        fold.model.mismatch_multiloop)
+end
 
-# note: reversed order of j, i, dangle3, dangle5
-score_multiloop_closing_bp(fold::Fold{M}, i::Integer, j::Integer,
-                           dangle5::Integer, dangle3::Integer) where {T, M <: LoopModel{T}} =
-    score_multiloop_stem(fold, j, i, dangle3, dangle5)
+function score_multiloop_closing_bp(fold::Fold{M}, i::Integer, j::Integer) where {T, M <: LoopModel{T}}
+    dangle5 = i + 1
+    dangle3 = j - 1
+    # note: reversed order of j, i, dangle3, dangle5
+    return score_stem_extloop_multiloop(fold, j, i, dangle3, dangle5,
+                                        fold.model.mismatch_multiloop)
+end
 
 score_multiloop_unpaired(fold::Fold{M}, nunpaired::Integer) where {M <: LoopModel} =
     nunpaired * fold.model.multiloop_unpaired
