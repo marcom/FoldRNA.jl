@@ -284,15 +284,18 @@ score_intloop11(fold::Fold{M}, i::Integer, j::Integer, k::Integer, l::Integer) w
 
 score_intloop12(fold::Fold{M}, i::Integer, j::Integer, k::Integer, l::Integer,
                 b1::Integer, b3::Integer, b4::Integer) where {M <: LoopModel} =
-    fold.model.intloop12[bptype(fold, i, j), bptype(fold, l, k), fold.seq[b1], fold.seq[b3], fold.seq[b4]]
+                    fold.model.intloop12[bptype(fold, i, j), bptype(fold, l, k),
+                                         fold.seq[b1], fold.seq[b3], fold.seq[b4]]
 
 score_intloop21(fold::Fold{M}, i::Integer, j::Integer, k::Integer, l::Integer,
                 b1::Integer, b2::Integer, b3::Integer) where {M <: LoopModel} =
-    fold.model.intloop12[bptype(fold, l, k), bptype(fold, i, j), fold.seq[b3], fold.seq[b1], fold.seq[b2]]
+                    fold.model.intloop12[bptype(fold, l, k), bptype(fold, i, j),
+                                         fold.seq[b3], fold.seq[b1], fold.seq[b2]]
 
 score_intloop22(fold::Fold{M}, i::Integer, j::Integer, k::Integer, l::Integer,
                 b1::Integer, b2::Integer, b3::Integer, b4::Integer) where {M <: LoopModel} =
-    fold.model.intloop22[bptype(fold, i, j), bptype(fold, l, k), fold.seq[b1], fold.seq[b2], fold.seq[b3], fold.seq[b4]]
+                    fold.model.intloop22[bptype(fold, i, j), bptype(fold, l, k),
+                                         fold.seq[b1], fold.seq[b2], fold.seq[b3], fold.seq[b4]]
 
 score_mismatch_intloop1n(fold::Fold{M}, i::Integer, j::Integer, k::Integer, l::Integer,
                          b1::Integer, b2::Integer, b3::Integer, b4::Integer) where {M <: LoopModel} =
@@ -311,7 +314,8 @@ score_mismatch_intloop23(fold::Fold{M}, i::Integer, j::Integer, k::Integer, l::I
 
 score_extloop_stem(fold::Fold{M}, i::Integer, j::Integer,
                    dangle5::Integer, dangle3::Integer) where {M <: LoopModel} =
-    score_stem_extloop_multiloop(fold, i, j, dangle5, dangle3, fold.model.mismatch_extloop)
+                       score_stem_extloop_multiloop(fold, i, j, dangle5, dangle3,
+                                                    fold.model.mismatch_extloop)
 
 score_extloop_unpaired(fold::Fold{M}, nunpaired::Integer) where {M <: LoopModel} =
     nunpaired * fold.model.extloop_unpaired
@@ -332,9 +336,6 @@ function score_multiloop_closing_bp(fold::Fold{M}, i::Integer, j::Integer) where
                                         fold.model.mismatch_multiloop)
 end
 
-score_multiloop_unpaired(fold::Fold{M}, nunpaired::Integer) where {M <: LoopModel} =
-    nunpaired * fold.model.multiloop_unpaired
-
 function score_stem_extloop_multiloop(fold::Fold{M}, i::Integer, j::Integer,
                                       dangle5::Integer, dangle3::Integer,
                                       mismatch) where {M <: LoopModel}
@@ -353,3 +354,7 @@ function score_stem_extloop_multiloop(fold::Fold{M}, i::Integer, j::Integer,
     end
     return s
 end
+
+score_multiloop_unpaired(fold::Fold{M}, nunpaired::Integer) where {M <: LoopModel} =
+    nunpaired * fold.model.multiloop_unpaired
+
