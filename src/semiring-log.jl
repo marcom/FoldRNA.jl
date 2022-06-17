@@ -8,6 +8,7 @@ struct LogSR{T<:Number} <: Number
 end
 
 Base.float(x::LogSR{T}) where {T} = exp(x.val)
+Base.log(x::LogSR{T}) where {T} = x.val
 Base.:(==)(x::LogSR{T}, y::LogSR{T}) where {T} = x.val == y.val
 Base.:+(x::LogSR{T}, y::LogSR{T}) where {T} = LogSR{T}(logaddexp(x.val, y.val))
 Base.:*(x::LogSR{T}, y::LogSR{T}) where {T} = LogSR{T}(x.val + y.val)

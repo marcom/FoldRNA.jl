@@ -9,6 +9,9 @@ using NucleicAcidFold: LogSR
     @test (x + y) isa typeof(x)
     @test (x * y) isa typeof(x)
     @test (x / y) isa typeof(x)
+    @test isapprox(float(y), exp(y.val))
+    @test log(x) == x.val
+    @test log(y) == y.val
 
     # test Base.show
     iobuf = IOBuffer()
