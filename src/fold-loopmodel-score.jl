@@ -345,17 +345,11 @@ function score_stem_extloop_multiloop(fold::Fold{M}, i::Integer, j::Integer,
         s += score_mismatch(fold, i, j, dangle5, dangle3, mismatch)
     else
         if dangle5 != -1
-            s += score_dangle5(fold, i, j, dangle5)
+            s += fold.model.dangle5[bptype(fold, i, j), fold.seq[dangle5]]
         end
         if dangle3 != -1
-            s += score_dangle3(fold, i, j, dangle3)
+            s += fold.model.dangle3[bptype(fold, i, j), fold.seq[dangle3]]
         end
     end
     return s
 end
-
-score_dangle5(fold::Fold{M}, i::Integer, j::Integer, k::Integer) where {M <: LoopModel} =
-    fold.model.dangle5[bptype(fold, i, j), fold.seq[k]]
-
-score_dangle3(fold::Fold{M}, i::Integer, j::Integer, k::Integer) where {M <: LoopModel} =
-    fold.model.dangle3[bptype(fold, i, j), fold.seq[k]]
