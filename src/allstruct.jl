@@ -21,10 +21,21 @@ function allstruct(seq::AbstractString;
     return _allstruct_rf(seq; hpmin, canbp)
 end
 
+function allstruct(seq; hpmin::Integer=3, canbp::Function)
+    return _allstruct_rf(seq; hpmin, canbp)
+end
+
 function allstruct(f::Function,
                    seq::AbstractString;
                    hpmin::Integer=3,
                    canbp::Function=default_canbp)
+    return _allstruct_rf(f, seq; hpmin, canbp)
+end
+
+function allstruct(f::Function,
+                   seq;
+                   hpmin::Integer=3,
+                   canbp::Function)
     return _allstruct_rf(f, seq; hpmin, canbp)
 end
 
@@ -34,7 +45,7 @@ allstruct(n::Integer; hpmin::Integer=3) =
 allstruct(f::Function, n::Integer; hpmin::Integer=3) =
     allstruct(f, "N"^n; hpmin, canbp=(s,i,j)->true)
 
-@resumable function _allstruct_rf(seq::AbstractString;
+@resumable function _allstruct_rf(seq;
                                   hpmin::Integer, canbp::Function) :: Pairtable
     n = length(seq)
     pt = Pairtable(n)
@@ -43,7 +54,7 @@ allstruct(f::Function, n::Integer; hpmin::Integer=3) =
     end
 end
 
-function _allstruct_rf(f, seq::AbstractString;
+function _allstruct_rf(f::Function, seq;
                        hpmin::Integer, canbp::Function)
     n = length(seq)
     pt = Pairtable(n)
@@ -52,7 +63,7 @@ function _allstruct_rf(f, seq::AbstractString;
     end
 end
 
-@resumable function _allstruct_rf_rec!(pt::Pairtable, seq::AbstractString,
+@resumable function _allstruct_rf_rec!(pt::Pairtable, seq,
                                        i::Integer, n::Integer,
                                        hpmin::Integer, canbp::Function) :: Pairtable
     if i > n
