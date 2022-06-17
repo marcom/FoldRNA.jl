@@ -92,7 +92,8 @@ function mfe(fold::Fold{M}) where {T, M <: LoopModel{T}}
 end
 
 function partfn(fold::Fold{M}) where {T, M <: LoopModel{T}}
-    A, Ab, Am, Am1 = loopmodel(LogSR{T}, fold; hpmin=fold.model.hpmin, maxintloop=-1)
+    Tsr = Float64
+    A, Ab, Am, Am1 = loopmodel(LogSR{Tsr}, fold; hpmin=fold.model.hpmin, maxintloop=-1)
     logQ = A[1, length(fold)].val
     return - fold.model.RT * logQ
 end
