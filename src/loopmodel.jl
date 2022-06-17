@@ -71,7 +71,7 @@ bptype(m::LoopModel, si::Integer, sj::Integer) = m.bptype[si, sj]
 
 # loopmodel CKY algorithm
 # T must be a semiring (TODO: list exact properties used)
-function loopmodel(T::Type, fold; hpmin::Integer=3, maxintloop::Integer=-1)
+function loopmodel(T::Type, to_SR::Function, fold; hpmin::Integer=3, maxintloop::Integer=-1)
     h = hpmin
     n = length(fold)
     # TODO: use upper-diagonal matrices to save space
@@ -94,7 +94,7 @@ function loopmodel(T::Type, fold; hpmin::Integer=3, maxintloop::Integer=-1)
             # Ab: (i,j) form a base pair
             if canbp(fold, i, j)
                 # case: (i,j) closes hairpin
-                Ab[i,j] = T(score(fold, Hairpin(i, j)))
+                Ab[i,j] = to_SR(score(fold, Hairpin(i, j)))
                 # case: (i,j) closes internal loop started from (k,l)
                 if maxintloop >= 0
                     for k = i+1:min(j-h-2, i + maxintloop + 1)
@@ -109,7 +109,7 @@ function loopmodel(T::Type, fold; hpmin::Integer=3, maxintloop::Integer=-1)
                             # <=> l = k + j - i - 2 - maxintloop
                             if loopsize <= maxintloop
                                 if canbp(fold, k, l)
-                                    Ab[i,j] += T(score(fold, Intloop(i, j, k, l))) * Ab[k,l]
+                                    Ab[i,j] += to_SR(score(fold, Intloop(i, j, k, l))) * Ab[k,l]
                                 end
                             else
                                 println("in loopmodel, intloop: unnecessary iteration: i = $i, j= $j, k = $k, l = $l")
@@ -120,47 +120,47 @@ function loopmodel(T::Type, fold; hpmin::Integer=3, maxintloop::Integer=-1)
                     for k = i+1:j-h-2
                         for l = k+h+1:j-1
                             if canbp(fold, k, l)
-                                Ab[i,j] += T(score(fold, Intloop(i, j, k, l))) * Ab[k,l]
+                                Ab[i,j] += to_SR(score(fold, Intloop(i, j, k, l))) * Ab[k,l]
                             end
                         end
                     end
                 end
                 # case: (i,j) closes multiloop
                 for k = i+h+2:j-h-3
-                    Ab[i,j] += Am[i+1,k] * Am1[k+1,j-1] * T(score_multiloop_closing_bp(fold, i, j))
+                    Ab[i,j] += Am[i+1,k] * Am1[k+1,j-1] * to_SR(score_multiloop_closing_bp(fold, i, j))
                 end
             end
 
             # Am: part of a multiloop with at least one stem
             # case: j unpaired
-            Am[i,j] = Am[i,j-1] * T(score_multiloop_unpaired(fold, 1))
+            Am[i,j] = Am[i,j-1] * to_SR(score_multiloop_unpaired(fold, 1))
             # case: j paired to k (i <= k < j-h), exactly one stem in multiloop
             for k = i:j-h-1
                 # TODO: unnecessary check for canbp if Ab[k,j] == 0 if (k,j) can't basepair
                 if canbp(fold, k, j)
-                    Am[i,j] += T(score_multiloop_unpaired(fold, k - i)) * Ab[k,j]
+                    Am[i,j] += to_SR(score_multiloop_unpaired(fold, k - i)) * Ab[k,j]
                 end
             end
             # case: j paired to k (i+h+2 <= k < j-h), more than one stem in multiloop
             for k = i+h+2:j-h-1
                 # TODO: unnecessary check for canbp if Ab[k,j] == 0 if (k,j) can't basepair
                 if canbp(fold, k, j)
-                    Am[i,j] += Am[i,k-1] * Ab[k,j] * T(score_multiloop_stem(fold, k, j))
+                    Am[i,j] += Am[i,k-1] * Ab[k,j] * to_SR(score_multiloop_stem(fold, k, j))
                 end
             end
 
             # Am1: part of a multiloop with exactly one stem with (i,h) the closing base pair (i<h<=j)
             # case: j unpaired
-            Am1[i,j] =  Am1[i,j-1] * T(score_multiloop_unpaired(fold, 1))
+            Am1[i,j] =  Am1[i,j-1] * to_SR(score_multiloop_unpaired(fold, 1))
             # case: j paired to i (must be to i due to definition of Am1)
             # TODO: unnecesary check for canbp if Ab[i,j] == 0 if (i,j) can't basepair
             if canbp(fold, i, j)
-                Am1[i,j] += Ab[i,j] * T(score_multiloop_stem(fold, i, j))
+                Am1[i,j] += Ab[i,j] * to_SR(score_multiloop_stem(fold, i, j))
             end
 
             # A: extloop
             # case: i unpaired
-            A[i,j] = A[i+1,j] * T(score_extloop_unpaired(fold, 1))
+            A[i,j] = A[i+1,j] * to_SR(score_extloop_unpaired(fold, 1))
             # case: (i,k) paired, i+h+1 <= k < j
             for k = i+h+1:j-1
                 # TODO: unnecesary check for canbp if Ab[i,k] == 0 if (i,k) can't basepair

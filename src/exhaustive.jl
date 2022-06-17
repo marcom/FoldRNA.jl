@@ -2,8 +2,7 @@ function exhaustive_mfe(fold::Fold)
     n = length(fold)
     pt_min = Pairtable(n)
     en_min = energy(fold, pt_min)
-    seq = decode(fold.model.alphabet, fold.seq)
-    for pt in allstruct(seq; fold.model.hpmin)
+    for pt in allstruct(fold)
         en = energy(fold, pt)
         if en < en_min
             en_min = en
@@ -15,9 +14,8 @@ end
 
 function exhaustive_partfn(::Type{T}, fold::Fold) where {T}
     RT, hpmin = fold.model.RT, fold.model.hpmin
-    seq = decode(fold.model.alphabet, fold.seq)
     Q = zero(T)
-    for pt in allstruct(seq; hpmin)
+    for pt in allstruct(fold)
         Q += exp(- energy(fold, pt) / RT)
     end
     return Q
@@ -32,10 +30,9 @@ end
 function exhaustive_bpp_partfn(::Type{T}, fold::Fold) where {T}
     n = length(fold)
     RT, hpmin = fold.model.RT, fold.model.hpmin
-    seq = decode(fold.model.alphabet, fold.seq)
     Q = zero(T)
     p = zeros(T, n, n)
-    for pt in allstruct(seq; hpmin)
+    for pt in allstruct(fold)
         weight = exp(- energy(fold, pt) / RT)
         Q += weight
         for i = 1:n

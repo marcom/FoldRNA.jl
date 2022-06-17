@@ -17,12 +17,16 @@ function Base.show(io::IO, mime::MIME"text/plain", fold::Fold)
     print(  io, " Seq: ", decode(fold.model, fold.seq))
 end
 
-# Note: only implemented for LoopModel at the moment
+# Note: bptype only implemented for LoopModel at the moment
 bptype(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
     bptype(fold.model, fold.seq[i], fold.seq[j])
-
+canbp(m::LoopModel, ci, cj) = bptype(m, ci, cj) != 0
 canbp(fold::Fold{M}, i, j) where {M <: LoopModel} = bptype(fold, i, j) != 0
 
+canbp(m::BpModel, ci, cj) = m.score_bp[ci, cj] < Inf
+canbp(fold::Fold{M}, i, j) where {M <: BpModel} = canbp(fold.model, fold.seq[i], fold.seq[j])
+
+allstruct(fold::Fold) = allstruct(fold; hpmin=fold.model.hpmin, canbp)
 
 # functions for ::Fold{BpModel}
 # energy, mfe, partfn, bpp, prob_of_struct
@@ -86,14 +90,22 @@ prob_of_struct(fold::Fold, dbn::AbstractString) =
 
 # TODO: backtrack missing
 function mfe(fold::Fold{M}) where {T, M <: LoopModel{T}}
-    A, Ab, Am, Am1 = loopmodel(MinPlusSR{T}, fold; hpmin=fold.model.hpmin, maxintloop=-1)
+    A, Ab, Am, Am1 = loopmodel(MinPlusSR{T},
+                               x -> MinPlusSR{T}(x),
+                               fold;
+                               hpmin=fold.model.hpmin, maxintloop=-1)
     en_mfe = A[1, length(fold)].val
     return fold.model.unit * en_mfe
 end
 
 function partfn(fold::Fold{M}) where {T, M <: LoopModel{T}}
     Tsr = typeof(log(one(T)))
-    A, Ab, Am, Am1 = loopmodel(LogSR{Tsr}, fold; hpmin=fold.model.hpmin, maxintloop=-1)
+    # scale = -1/RT
+    scale = - one(Tsr) / ((fold.model.RT / fold.model.unit)::Tsr)
+    A, Ab, Am, Am1 = loopmodel(LogSR{Tsr},
+                               x -> LogSR{Tsr}(x * scale),
+                               fold;
+                               hpmin=fold.model.hpmin, maxintloop=-1)
     logQ = A[1, length(fold)].val
     return - fold.model.RT * logQ
 end

@@ -73,42 +73,48 @@ using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
 
     @testset "mfe (loopmodel)" begin
         model = LoopModel{Float64,Int,4,6,30}(name="Test model", alphabet=Alphabet("ACGU"))
-        model.bptype = ones(Int, 4, 4)
-        for _ = 1:3
-            seq = randseq(13)
-            fold = Fold(seq, model)
-            en_mfe_ex, pt_mfe_ex = exhaustive_mfe(fold)
-            @test unit(en_mfe_ex) == unit(model.unit)
-            @test pt_mfe_ex isa Pairtable
+        for bptype in (ones(Int, 4, 4), zeros(Int, 4, 4))
+            model.bptype = bptype
+            for _ = 1:3
+                seq = randseq(13)
+                fold = Fold(seq, model)
+                en_mfe_ex, pt_mfe_ex = exhaustive_mfe(fold)
+                @test unit(en_mfe_ex) == unit(model.unit)
+                @test pt_mfe_ex isa Pairtable
+            end
+            # TODO: compare to cky dyn prog calc
         end
-        # TODO: compare to cky dyn prog calc
     end
 
     @testset "partfn (loopmodel)" begin
         model = LoopModel{Float64,Int,4,6,30}(name="Test model", alphabet=Alphabet("ACGU"))
-        model.bptype = ones(Int, 4, 4)
-        seq = "GGGAAACCC"
-        for T in (Float64, BigFloat, LogSR{Float64})
-            fold = Fold(seq, model)
-            @test exhaustive_partfn(T, fold) isa T
-            @test exhaustive_partfn(fold) isa Quantity
+        for bptype in (ones(Int, 4, 4), zeros(Int, 4, 4))
+            model.bptype = bptype
+            seq = "GGGAAACCC"
+            for T in (Float64, BigFloat, LogSR{Float64})
+                fold = Fold(seq, model)
+                @test exhaustive_partfn(T, fold) isa T
+                @test exhaustive_partfn(fold) isa Quantity
+            end
+            # TODO: compare to cky dyn prog calc
         end
-        # TODO: compare to cky dyn prog calc
     end
 
     @testset "bpp_partfn (loopmodel)" begin
         model = LoopModel{Float64,Int,4,6,30}(name="Test model", alphabet=Alphabet("ACGU"))
-        model.bptype = ones(Int, 4, 4)
-        T = BigFloat
-        for seq in ["G", "GGGAAACCC", "GAGAAACUUUCCACG"]
-            n = length(seq)
-            fold = Fold(seq, model)
-            mRTlogQ, p = exhaustive_bpp_partfn(fold)
-            @test mRTlogQ isa Quantity
-            @test p isa Matrix
-            @test size(p) == (n, n)
-            @test all(x -> 0.0 <= x <= 1.0, p)
-            # TODO: compare to cky dyn prog calc
+        for bptype in (ones(Int, 4, 4), zeros(Int, 4, 4))
+            model.bptype = bptype
+            T = BigFloat
+            for seq in ["G", "GGGAAACCC", "GAGAAACUUUCCACG"]
+                n = length(seq)
+                fold = Fold(seq, model)
+                mRTlogQ, p = exhaustive_bpp_partfn(fold)
+                @test mRTlogQ isa Quantity
+                @test p isa Matrix
+                @test size(p) == (n, n)
+                @test all(x -> 0.0 <= x <= 1.0, p)
+                # TODO: compare to cky dyn prog calc
+            end
         end
     end
 end
