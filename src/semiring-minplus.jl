@@ -15,3 +15,4 @@ Base.:+(x::MinPlusSR{T}, y::Number) where {T} = x + MinPlusSR{T}(T(y))
 Base.:+(x::Number, y::MinPlusSR{T}) where {T} = MinPlusSR{T}(T(x)) + y
 Base.:*(x::MinPlusSR{T}, y::Number) where {T} = x * MinPlusSR{T}(T(y))
 Base.:*(x::Number, y::MinPlusSR{T}) where {T} = MinPlusSR{T}(T(x)) * y
+Base.show(io::IO, ::MIME"text/plain", x::MinPlusSR{T}) where {T} = print(io, "$(x.val)")
