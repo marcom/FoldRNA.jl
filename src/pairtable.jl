@@ -64,6 +64,8 @@ end
 Base.length(pt::Pairtable) = length(pt.pairs)
 Base.:(==)(a::Pairtable, b::Pairtable) = (a.pairs == b.pairs) && (a.strands == b.strands)
 Base.hash(a::Pairtable, h::UInt) = hash(a.strands, hash(a.pairs, h))
+Base.show(io::IO, mime::MIME"text/plain", pt::Pairtable) = print(io, String(pt))
+
 hasbp(pt::Pairtable, i::Int, j::Int) = pt.pairs[i] == j
 isunpaired(pt::Pairtable, i) = pt.pairs[i] == UNPAIRED
 isbpopening(pt::Pairtable, i) = pt.pairs[i] != UNPAIRED && i < pt.pairs[i]

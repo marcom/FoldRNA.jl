@@ -90,6 +90,14 @@ const TEST_DBN = vcat(TEST_DBN_SINGLESTRAND, TEST_DBN_MULTISTRAND)
         end
     end
 
+    @testset "show" begin
+        dbn = "(((...)))"
+        io = IOBuffer()
+        show(io, MIME("text/plain"), Pairtable(dbn))
+        @test String(take!(io)) == dbn
+        close(io)
+    end
+
     @testset "hasbp" begin
         @test hasbp(Pairtable(".(...)"), 2, 6)
         @test !hasbp(Pairtable("....."), 2, 5)
