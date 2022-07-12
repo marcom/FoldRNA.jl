@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: Fold, Pairtable, energy, mfe, partfn, prob_of_struct,
+using FoldRNA: Fold, Pairtable, energy, mfe, partfn, prob_of_struct,
     RNA_BPMODEL, Loop, LoopStructure, canbp
 using Unitful: Quantity
 

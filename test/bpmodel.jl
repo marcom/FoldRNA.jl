@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: bpmodel, bpmodel_bpp
+using FoldRNA: bpmodel, bpmodel_bpp
 using Unitful: @u_str
 
 @testset "bpmodel" begin

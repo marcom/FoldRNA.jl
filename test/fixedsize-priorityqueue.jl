@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: FixedsizePQ, enqueue!, dequeue!, peek
+using FoldRNA: FixedsizePQ, enqueue!, dequeue!, peek
 
 @testset "FixedsizePQ" begin
     fpq = FixedsizePQ{String,Float64}(2)

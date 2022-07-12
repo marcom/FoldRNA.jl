@@ -1,4 +1,4 @@
-using NucleicAcidFold
+using FoldRNA
 using Test
 using OffsetArrays: OffsetArray
 

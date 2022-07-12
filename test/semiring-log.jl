@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: LogSR
+using FoldRNA: LogSR
 
 @testset "Log semiring" begin
     # TODO: test all properties from https://en.wikipedia.org/wiki/Semiring

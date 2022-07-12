@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: Hairpin, Intloop, Multiloop, Extloop
+using FoldRNA: Hairpin, Intloop, Multiloop, Extloop
 using Unitful: unit
 
 @testset "score LoopModel" begin

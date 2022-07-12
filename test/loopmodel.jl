@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: bptype
+using FoldRNA: bptype
 using Unitful: Quantity
 
 @testset "loopmodel" begin

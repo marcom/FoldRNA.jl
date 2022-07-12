@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: allseq, numseq, DEFAULT_BASES, DEFAULT_BASEPAIRS
+using FoldRNA: allseq, numseq, DEFAULT_BASES, DEFAULT_BASEPAIRS
 
 const TEST_BASE_BASEPAIRS = [
     DEFAULT_BASES => DEFAULT_BASEPAIRS,

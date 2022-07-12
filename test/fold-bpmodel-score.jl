@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: Basepair, score, score_exp
+using FoldRNA: Basepair, score, score_exp
 
 @testset "score BpModel" begin
     seq = "GGGAAACCC"

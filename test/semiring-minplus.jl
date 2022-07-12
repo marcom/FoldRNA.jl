@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: MinPlusSR
+using FoldRNA: MinPlusSR
 
 @testset "MinPlus semiring" begin
     # TODO: test all properties from https://en.wikipedia.org/wiki/Semiring

@@ -1,4 +1,4 @@
-module NucleicAcidFold
+module FoldRNA
 
 include("fixedsize-priorityqueue.jl")
 
@@ -41,4 +41,4 @@ const RNA_LANGDON2018, RNA_LANGDON2018_DH = readparam_viennarna(
 #       ViennaRNA dna_*.par files).  Also: are these DNA params
 #       measured at 37 deg Celsius?
 
-end # module
+end # module FoldRNA

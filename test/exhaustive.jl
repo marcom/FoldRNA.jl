@@ -1,6 +1,6 @@
 using Test
 using Unitful: Quantity
-using NucleicAcidFold: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
+using FoldRNA: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
     exhaustive_bpp_partfn, exhaustive_design
 
 @testset "exhaustive" begin

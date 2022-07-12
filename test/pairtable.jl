@@ -1,7 +1,7 @@
 using Test
-using NucleicAcidFold
-using NucleicAcidFold: hasbp, isunpaired, isbpopening, isbpclosing, findstems, Basepair
-using NucleicAcidFold: DEFAULT_NBASES, DEFAULT_NBASEPAIRS, UNPAIRED_CHAR, BRACKET_OPEN
+using FoldRNA
+using FoldRNA: hasbp, isunpaired, isbpopening, isbpclosing, findstems, Basepair
+using FoldRNA: DEFAULT_NBASES, DEFAULT_NBASEPAIRS, UNPAIRED_CHAR, BRACKET_OPEN
 
 const TEST_DBN_SINGLESTRAND = [
     ".",

@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: allstruct
+using FoldRNA: allstruct
 
 @testset "allstruct" begin
     for hpmin = 0:3

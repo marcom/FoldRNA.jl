@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: Alphabet, encode, decode
+using FoldRNA: Alphabet, encode, decode
 
 @testset "Alphabet" begin
     @test Alphabet("AB") == Alphabet("AB")

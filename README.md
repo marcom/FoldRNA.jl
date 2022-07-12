@@ -1,4 +1,4 @@
-# NucleicAcidFold
+# FoldRNA
 
 This is an experimental implementation of nucleic acid secondary
 structure prediction and analysis algorithms in Julia.  Everything is

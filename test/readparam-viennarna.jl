@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: readparam_viennarna
+using FoldRNA: readparam_viennarna
 import ViennaRNA_jll
 
 @testset "readparam" begin

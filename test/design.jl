@@ -1,5 +1,5 @@
 using Test
-using NucleicAcidFold: design_random_ptarget
+using FoldRNA: design_random_ptarget
 
 @testset "design" begin
     @testset "for BpModel" begin
