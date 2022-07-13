@@ -12,6 +12,8 @@ using Unitful: Quantity
 
         fold = Fold(seq, model)
         @test length(fold) == length(seq)
+        @test bptype(fold, 1, 9) isa Int
+        @test canbp(fold, 1, 9)
         @test energy(fold, dbn) isa Quantity
         @test energy(fold, pt) isa Quantity
         @test mfe(fold) == -9.0u"kcal/mol"
@@ -30,6 +32,7 @@ using Unitful: Quantity
         model = LoopModel{Float64,Int,4,6,30}(alphabet=Alphabet("ACGU"))
         model.bptype .= 1
         fold = Fold(seq, model)
+        @test length(fold) == length(seq)
         @test bptype(fold, 1, 9) isa Int
         @test canbp(fold, 1, 9)
         @test energy(fold, dbn) isa Quantity

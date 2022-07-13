@@ -1,8 +1,15 @@
 using Test
-using FoldRNA: bpmodel, bpmodel_bpp
+using FoldRNA: bpmodel, bpmodel_bpp, bptype, canbp
 using Unitful: @u_str
 
 @testset "bpmodel" begin
+    @testset "BpModel" begin
+        model = RNA_BPMODEL
+        @test model isa BpModel
+        @test bptype(model, 1, 2) isa Int
+        @test canbp(model, 1, 4)
+        @test ! canbp(model, 1, 2)
+    end
     @testset "bpmodel" begin
         # check that number of visited structures is correct
         function mynumstruct(seq; hpmin)

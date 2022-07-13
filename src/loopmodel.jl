@@ -66,7 +66,8 @@ end
 
 encode(m::LoopModel, iter) = encode(m.alphabet, iter)
 decode(m::LoopModel, iter) = decode(m.alphabet, iter)
-bptype(m::LoopModel, si::Integer, sj::Integer) = m.bptype[si, sj]
+bptype(m::LoopModel, ci::Integer, cj::Integer) = m.bptype[ci, cj]
+canbp(m::LoopModel, ci::Integer, cj::Integer) = bptype(m, ci, cj) != 0
 
 
 # loopmodel CKY algorithm

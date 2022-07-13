@@ -3,21 +3,64 @@ using OffsetArrays: OffsetMatrix
 using Unitful: @u_str, Quantity, ustrip
 using DataStructures: DefaultDict
 
+# TODO
+# - use the same field names in BpModel and LoopModel
+# - constructor like this
+# BpModel(name="RNA BpModel",
+#         bases="ACGU",
+#         score_basepair=Dict("AU" => -2.0u"kcal/mol",
+#                             "UA" => -2.0u"kcal/mol",
+#                             "CG" => -3.0u"kcal/mol",
+#                             "GC" => -3.0u"kcal/mol",
+#                             "GU" => -1.0u"kcal/mol",
+#                             "UG" => -1.0u"kcal/mol",
+#         ),
+#         temperature=37u"°C",
+# )
 struct BpModel{T}
     name :: String
     alphabet :: Alphabet
     score_bp :: Matrix{T}
+    bases_to_bptype :: Matrix{Int}
+    score_bptype :: Vector{T}
     RT :: Quantity
     unit :: Quantity
     hpmin :: Int
+    function BpModel{T}(name::AbstractString, alphabet::Alphabet, bases_to_bptype::Matrix{Int},
+                        score_bptype::Vector{T}, RT::Quantity, unit::Quantity, hpmin::Integer) where {T}
+        nb = length(alphabet)
+        axes(bases_to_bptype) == (1:nb, 1:nb) || throw(ArgumentError("wrong axes of bases_to_bptype"))
+        maximum(bases_to_bptype) <= length(score_bptype) ||
+            throw(ArgumentError("bases_to_bptype contains indices that don't exist in score_bptype"))
+        # generate score_bp
+        score_bp = fill(T(Inf), nb, nb)
+        for i = 1:nb, j = 1:nb
+            ibp = bases_to_bptype[i, j]
+            if ibp != 0
+                score_bp[i,j] = score_bptype[ibp]
+            end
+        end
+        return new{T}(name, alphabet, score_bp, bases_to_bptype, score_bptype, RT, unit, hpmin)
+    end
 end
+
 encode(m::BpModel, iter) = encode(m.alphabet, iter)
 decode(m::BpModel, iter) = decode(m.alphabet, iter)
+bptype(m::BpModel, ci::Integer, cj::Integer) = m.bases_to_bptype[ci, cj]
+canbp(m::BpModel, ci::Integer, cj::Integer) = bptype(m, ci, cj) != 0
 
 const RNA_BPMODEL = BpModel{Float64}(
     "RNA Nussinov-Jacobson model (basepairs)",
     Alphabet("RNA", "ACGU"),
-    [ Inf Inf Inf -2.0; Inf Inf -3.0 Inf; Inf -3.0 Inf -1.0; -2.0 Inf -1.0 Inf ],
+    # AA AC AG AU
+    [  0  0  0  1;
+    # CA CC CG CU
+       0  0  3  0;
+    # GA GC GG GU
+       0  4  0  5;
+    # UA UC UG UU
+       2  0  6  0 ],
+    [ -2.0, -2.0, -3.0, -3.0, -1.0, -1.0 ],
     RT37,
     1.0u"kcal/mol",
     DEFAULT_HPMIN

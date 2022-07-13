@@ -17,14 +17,8 @@ function Base.show(io::IO, mime::MIME"text/plain", fold::Fold)
     print(  io, " Seq: ", decode(fold.model, fold.seq))
 end
 
-# Note: bptype only implemented for LoopModel at the moment
-bptype(fold::Fold{M}, i::Integer, j::Integer) where {M <: LoopModel} =
-    bptype(fold.model, fold.seq[i], fold.seq[j])
-canbp(m::LoopModel, ci, cj) = bptype(m, ci, cj) != 0
-canbp(fold::Fold{M}, i, j) where {M <: LoopModel} = bptype(fold, i, j) != 0
-
-canbp(m::BpModel, ci, cj) = m.score_bp[ci, cj] < Inf
-canbp(fold::Fold{M}, i, j) where {M <: BpModel} = canbp(fold.model, fold.seq[i], fold.seq[j])
+bptype(fold::Fold, i::Integer, j::Integer) = bptype(fold.model, fold.seq[i], fold.seq[j])
+canbp(fold::Fold, i::Integer, j::Integer) = canbp(fold.model, fold.seq[i], fold.seq[j])
 
 allstruct(fold::Fold) = allstruct(fold; hpmin=fold.model.hpmin, canbp)
 
