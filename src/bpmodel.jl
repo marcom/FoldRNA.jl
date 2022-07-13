@@ -21,6 +21,7 @@ struct BpModel{T}
     name :: String
     alphabet :: Alphabet
     score_bp :: Matrix{T}
+    bptypes :: Vector{Tuple{Int,Int}}
     bases_to_bptype :: Matrix{Int}
     score_bptype :: Vector{T}
     RT :: Quantity
@@ -32,15 +33,21 @@ struct BpModel{T}
         axes(bases_to_bptype) == (1:nb, 1:nb) || throw(ArgumentError("wrong axes of bases_to_bptype"))
         maximum(bases_to_bptype) <= length(score_bptype) ||
             throw(ArgumentError("bases_to_bptype contains indices that don't exist in score_bptype"))
-        # generate score_bp
+        # generate score_bp, bptypes
         score_bp = fill(T(Inf), nb, nb)
+        nbptype = length(score_bptype)
+        bptypes = fill((0,0), nbptype)
         for i = 1:nb, j = 1:nb
             ibp = bases_to_bptype[i, j]
             if ibp != 0
                 score_bp[i,j] = score_bptype[ibp]
+                bptypes[ibp] = (i, j)
             end
         end
-        return new{T}(name, alphabet, score_bp, bases_to_bptype, score_bptype, RT, unit, hpmin)
+        if any(ij -> ij == (0, 0), bptypes)
+            error("some bptypes are undefined: $bptype")
+        end
+        return new{T}(name, alphabet, score_bp, bptypes, bases_to_bptype, score_bptype, RT, unit, hpmin)
     end
 end
 
