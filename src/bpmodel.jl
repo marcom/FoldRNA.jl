@@ -25,6 +25,8 @@ struct BpModel{T}
     bases_to_bptype :: Matrix{Int}
     score_bptype :: Vector{T}
     RT :: Quantity
+    unitof_RT :: Unitful.Units
+    RT_ustrip :: T
     unit :: Quantity
     hpmin :: Int
     function BpModel{T}(name::AbstractString, alphabet::Alphabet, bases_to_bptype::Matrix{Int},
@@ -47,7 +49,9 @@ struct BpModel{T}
         if any(ij -> ij == (0, 0), bptypes)
             error("some bptypes are undefined: $bptype")
         end
-        return new{T}(name, alphabet, score_bp, bptypes, bases_to_bptype, score_bptype, RT, unit, hpmin)
+        unitof_RT = Unitful.unit(RT)
+        RT_ustrip = ustrip(RT)
+        return new{T}(name, alphabet, score_bp, bptypes, bases_to_bptype, score_bptype, RT, unitof_RT, RT_ustrip, unit, hpmin)
     end
 end
 
