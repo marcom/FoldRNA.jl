@@ -81,11 +81,15 @@ function loopmodel(T::Type, to_SR::Function, fold; hpmin::Integer=3, maxintloop:
     Am  = zeros(T, n, n)  # like A, but part of a multiloop with at least one stem
     Am1 = zeros(T, n, n)  # like A, but part of a multiloop with exactly one stem from basepair (i,k), i<k<=j
 
-    # base case init
+    # base case init for A (extloop)
     for d = 0:h
+        len = d + 1
         for i = 1:n-d
             j = i + d
-            A[i,j] = one(T)
+            A[i,j] = to_SR(score_extloop_unpaired(fold, len))
+
+            # TODO: remove
+            #A[i,j] = one(T)
         end
     end
 
