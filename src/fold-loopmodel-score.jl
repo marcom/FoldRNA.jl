@@ -244,7 +244,7 @@ function score(fold::Fold{M}, ml::Multiloop) where {T, M <: LoopModel{T}}
     nunpaired = (j - i - 1) - 2 * nstems
     # Note: (nstems + 1) for the closing base pair of the multiloop
     # TODO: put this in a new function: score_multiloop_unpaired
-    s += ( m.multiloop_init
+    s += ( score_multiloop_init(fold)
            + nunpaired * m.multiloop_unpaired
            + (nstems + 1) * m.multiloop_branch )
     return s
@@ -333,6 +333,9 @@ end
 
 score_extloop_unpaired(fold::Fold{M}, nunpaired::Integer) where {M <: LoopModel} =
     nunpaired * fold.model.extloop_unpaired
+
+score_multiloop_init(fold::Fold{M}) where {T, M <: LoopModel{T}} =
+    fold.model.multiloop_init
 
 function score_multiloop_stem(fold::Fold{M}, i::Integer, j::Integer) where {T, M <: LoopModel{T}}
     n = length(fold)
