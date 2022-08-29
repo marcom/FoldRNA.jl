@@ -79,7 +79,7 @@ function loopmodel(T::Type, to_SR::Function, fold; hpmin::Integer=3, maxintloop:
     A   = zeros(T, n, n)  # property A on subsequence [i,j] (extloop)
     Ab  = zeros(T, n, n)  # like A, but (i,j) form a base pair
     Am  = zeros(T, n, n)  # like A, but part of a multiloop with at least one stem
-    Am1 = zeros(T, n, n)  # like A, but part of a multiloop with exactly one stem with (i,h) the closing base pair (i<h<=j)
+    Am1 = zeros(T, n, n)  # like A, but part of a multiloop with exactly one stem from basepair (i,k), i<k<=j
 
     # base case init
     for d = 0:h
@@ -96,7 +96,7 @@ function loopmodel(T::Type, to_SR::Function, fold; hpmin::Integer=3, maxintloop:
             Ab[i,j] = loopmodel_Ab(to_SR, fold, i, j, hpmin, maxintloop, Ab, Am, Am1)
             # Am: part of a multiloop with at least one stem
             Am[i,j] = loopmodel_Am(to_SR, fold, i, j, hpmin, maxintloop, Am, Ab)
-            # Am1: part of a multiloop with exactly one stem with (i,h) the closing base pair (i<h<=j)
+            # Am1: part of a multiloop with exactly one stem from basepair (i,k), i<k<=j
             Am1[i,j] = loopmodel_Am1(to_SR, fold, i, j, hpmin, maxintloop, Am1, Ab)
             # A: extloop
             A[i,j] = loopmodel_A(to_SR, fold, i, j, hpmin, maxintloop, A, Ab)
@@ -155,14 +155,14 @@ function loopmodel_Am(to_SR, fold, i, j, hpmin, maxintloop, Am, Ab)
     am_ij = Am[i,j-1] * to_SR(score_multiloop_unpaired(fold, 1))
     # case: j paired to k (i <= k < j-h), exactly one stem in multiloop
     for k = i:j-h-1
-        # TODO: unnecessary check for canbp if Ab[k,j] == 0 if (k,j) can't basepair
+        # TODO: unnecessary check for canbp if Ab[k,j] == zero(eltype(Ab)) when (k,j) can't basepair
         if canbp(fold, k, j)
-            am_ij += to_SR(score_multiloop_unpaired(fold, k - i)) * Ab[k,j]
+            am_ij += to_SR(score_multiloop_unpaired(fold, k - i)) * Ab[k,j] * to_SR(score_multiloop_stem(fold, k, j))
         end
     end
     # case: j paired to k (i+h+2 <= k < j-h), more than one stem in multiloop
     for k = i+h+2:j-h-1
-        # TODO: unnecessary check for canbp if Ab[k,j] == 0 if (k,j) can't basepair
+        # TODO: unnecessary check for canbp if Ab[k,j] == zero(eltype(Ab)) when (k,j) can't basepair
         if canbp(fold, k, j)
             am_ij += Am[i,k-1] * Ab[k,j] * to_SR(score_multiloop_stem(fold, k, j))
         end
@@ -172,11 +172,11 @@ end
 
 function loopmodel_Am1(to_SR, fold, i, j, hpmin, maxintloop, Am1, Ab)
     h = hpmin
-    # Am1: part of a multiloop with exactly one stem with (i,h) the closing base pair (i<h<=j)
+    # Am1: part of a multiloop with exactly one stem from basepair (i,k), i<k<=j
     # case: j unpaired
     am1_ij = Am1[i,j-1] * to_SR(score_multiloop_unpaired(fold, 1))
     # case: j paired to i (must be to i due to definition of Am1)
-    # TODO: unnecesary check for canbp if Ab[i,j] == 0 if (i,j) can't basepair
+    # TODO: unnecessary check for canbp if Ab[i,j] == zero(eltype(Ab)) when (i,j) can't basepair
     if canbp(fold, i, j)
         am1_ij += Ab[i,j] * to_SR(score_multiloop_stem(fold, i, j))
     end
@@ -186,19 +186,22 @@ end
 function loopmodel_A(to_SR, fold, i, j, hpmin, maxintloop, A, Ab)
     h = hpmin
     # A: extloop
+
+    # TODO: case distinction done on i here, but j elsewhere
+    #       was there a good reason for that? or just arbitrary?
     # case: i unpaired
-    a_ij = A[i+1,j] * to_SR(score_extloop_unpaired(fold, 1))
+    a_ij = to_SR(score_extloop_unpaired(fold, 1)) * A[i+1,j]
     # case: (i,k) paired, i+h+1 <= k < j
     for k = i+h+1:j-1
-        # TODO: unnecesary check for canbp if Ab[i,k] == 0 if (i,k) can't basepair
+        # TODO: unnecessary check for canbp if Ab[i,k] == zero(eltype(Ab)) when (i,k) can't basepair
         if canbp(fold, i, k)
-            a_ij += Ab[i,k] * A[k+1,j]
+            a_ij += Ab[i,k] * to_SR(score_extloop_stem(fold, i, k)) * A[k+1,j]
         end
     end
     # case: (i,k) paired, k == j
-    # TODO: unnecesary check for canbp if Ab[i,k] == 0 if (i,k) can't basepair
+    # TODO: unnecessary check for canbp if Ab[i,j] == zero(eltype(Ab)) when (i,j) can't basepair
     if canbp(fold, i, j)
-        a_ij += Ab[i,j]
+        a_ij += Ab[i,j] * to_SR(score_extloop_stem(fold, i, j))
     end
     return a_ij
 end

@@ -250,15 +250,18 @@ function score(fold::Fold{M}, ml::Multiloop) where {T, M <: LoopModel{T}}
     return s
 end
 
-# TODO: score_extloop_unpaired
+# TODO: score_extloop_unpaired for unpaired bases in extloop
 function score(fold::Fold{M}, extloop::Extloop) where {T, M <: LoopModel{T}}
     n = length(fold)
     s = zero(T)
     for bp in extloop.stems
         i, j = bp.i, bp.j
-        dangle5 = i > 1 ? i-1 : -1
-        dangle3 = j < n ? j+1 : -1
-        s += score_extloop_stem(fold, i, j, dangle5, dangle3)
+        s += score_extloop_stem(fold, i, j)
+
+        # TODO: remove
+        # dangle5 = i > 1 ? i-1 : -1
+        # dangle3 = j < n ? j+1 : -1
+        # s += score_extloop_stem(fold, i, j, dangle5, dangle3)
     end
     return s
 end
@@ -312,10 +315,21 @@ score_mismatch_intloop23(fold::Fold{M}, i::Integer, j::Integer, k::Integer, l::I
     fold.model.mismatch_intloop23[bptype(fold, i, j), fold.seq[b1], fold.seq[b4]] +
         fold.model.mismatch_intloop23[bptype(fold, l, k), fold.seq[b3], fold.seq[b2]]
 
-score_extloop_stem(fold::Fold{M}, i::Integer, j::Integer,
-                   dangle5::Integer, dangle3::Integer) where {M <: LoopModel} =
-                       score_stem_extloop_multiloop(fold, i, j, dangle5, dangle3,
-                                                    fold.model.mismatch_extloop)
+# TODO: remove
+#
+# score_extloop_stem(fold::Fold{M}, i::Integer, j::Integer,
+#                    dangle5::Integer, dangle3::Integer) where {M <: LoopModel} =
+#                        score_stem_extloop_multiloop(fold, i, j, dangle5, dangle3,
+#                                                     fold.model.mismatch_extloop)
+
+# TODO: overlap with score_multiloop_stem, simplify
+function score_extloop_stem(fold::Fold{M}, i::Integer, j::Integer) where {T, M <: LoopModel{T}}
+    n = length(fold)
+    dangle5 = i > 1 ? i-1 : -1
+    dangle3 = j < n ? j+1 : -1
+    return score_stem_extloop_multiloop(fold, i, j, dangle5, dangle3,
+                                        fold.model.mismatch_extloop)
+end
 
 score_extloop_unpaired(fold::Fold{M}, nunpaired::Integer) where {M <: LoopModel} =
     nunpaired * fold.model.extloop_unpaired
