@@ -147,9 +147,12 @@ function loopmodel_Ab(to_SR, fold, i, j, hpmin, maxintloop, Ab, Am, Am1)
     end
     # case: (i,j) closes multiloop
     for k = i+h+2:j-h-3
-        ab_ij += Am[i+1,k] * Am1[k+1,j-1] *
-            to_SR(score_multiloop_closing_bp(fold, i, j)) *
-            to_SR(score_multiloop_init(fold))
+        ab_ij += Am[i+1,k] * Am1[k+1,j-1] * to_SR(score_multiloop_closing_bp(fold, i, j))
+
+        # TODO: remove
+        # ab_ij += Am[i+1,k] * Am1[k+1,j-1] *
+        #     to_SR(score_multiloop_closing_bp(fold, i, j)) *
+        #     to_SR(score_multiloop_init(fold))
     end
     return ab_ij
 end
