@@ -121,32 +121,50 @@ energy(fold::Fold{M}, dbn::String; verbose::Bool=false) where {M <: LoopModel} =
 
 function score(fold::Fold{M}, hairpin::Hairpin) where {T, M <: LoopModel{T}}
     i, j = hairpin.i, hairpin.j
-    m = fold.model
     len = j - i - 1
     hpseq = @view fold.seq[i:j]
+
     s = zero(T)
-    if haskey(m.specialhairpins, hpseq)
+    if is_specialhairpin(fold, i, j, len, hpseq)
         # it's a special hairpin loop (Triloop, Tetraloop, etc.)
-        s += m.specialhairpins[hpseq]
+        s += score_hairpin_special(fold, i, j, len, hpseq)
     else
-        # hairpin init
-        if len <= m.maxloop
-            # small loops have precomputed values
-            s += m.hairpin_init[len]
-        else
-            # large loops get extrapolated
-            s += m.hairpin_init[m.maxloop] + trunc(Int, m.lxc * log(len / m.maxloop))
-        end
+        s += score_hairpin_init(fold, i, j, len)
         # mismatch interior of closing basepair
-        # TODO: hardcoded 3, make it part of LoopModel ?
-        if len == 3
-            s += score_terminal_nonGC(fold, i, j)
-        elseif len > 3
-            s += score_mismatch(fold, i, j, i+1, j-1, m.mismatch_hairpin)
-        end
+        s += score_hairpin_mismatch(fold, i, j, len)
     end
     return s
 end
+
+is_specialhairpin(fold::Fold{M}, i, j, len, hpseq) where {T, M <: LoopModel{T}} =
+    haskey(fold.model.specialhairpins, hpseq)
+
+score_hairpin_special(fold::Fold{M}, i, j, len, hpseq) where {T, M <: LoopModel{T}} =
+    fold.model.specialhairpins[hpseq]
+
+function score_hairpin_init(fold::Fold{M}, i, j, len) where {T, M <: LoopModel{T}}
+    m = fold.model
+    s = if len <= m.maxloop
+        # small loops have precomputed values
+        m.hairpin_init[len]
+    else
+        # large loops get extrapolated
+        m.hairpin_init[m.maxloop] + trunc(Int, m.lxc * log(len / m.maxloop))
+    end
+    return s
+end
+
+function score_hairpin_mismatch(fold::Fold{M}, i, j, len) where {T, M <: LoopModel{T}}
+    # TODO: hardcoded 3, make it part of LoopModel ?
+    s = zero(T)
+    if len == 3
+        s += score_terminal_nonGC(fold, i, j)
+    elseif len > 3
+        s += score_mismatch(fold, i, j, i+1, j-1, fold.model.mismatch_hairpin)
+    end
+    return s
+end
+
 
 function score(fold::Fold{M}, intloop::Intloop) where {T, M <: LoopModel{T}}
     i, j, k, l = intloop.i, intloop.j, intloop.k, intloop.l
