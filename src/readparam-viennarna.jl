@@ -118,6 +118,8 @@ function readparam_viennarna(filepath::AbstractString;
                              # used in the ViennaRNA RNAfold v2.0 file format
                              file_bases = ['N', 'A', 'C', 'G', 'U'],
                              file_basepairs = [('C','G'), ('G','C'), ('G','U'), ('U','G'), ('A','U'), ('U','A'), ('N','N')],
+                             # file_wildcards: bases that are wildcard bases and not real bases
+                             file_wildcards = ['N'],
                              )
     isgcbp(bp::Tuple{Char,Char}) = bp == ('G','C') || bp == ('C','G')
     reshape_rowmajor(A, dims) = permutedims(reshape(A, reverse(dims)), length(dims):-1:1)
@@ -131,7 +133,7 @@ function readparam_viennarna(filepath::AbstractString;
     # containing N (probably to conserve space).
     out_bases = ['A', 'C', 'G', 'U', 'N']
     out_basepairs = [('C','G'), ('G','C'), ('G','U'), ('U','G'), ('A','U'), ('U','A'), ('N','N')]
-    alphabet = Alphabet("RNA", out_bases)
+    alphabet = Alphabet("RNA", out_bases; wildcard_chars = file_wildcards)
     deltaG = LoopModel{NUMTYPE,SEQTYPE,nb,nbp,MAXLOOPS}(
         alphabet = alphabet,
         unit = unit,

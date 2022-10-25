@@ -2,11 +2,17 @@
 struct Alphabet
     name :: String
     chars :: Vector{Char}
+    wildcard_chars :: Vector{Char}
 end
 
-Alphabet(name::AbstractString, chars::AbstractString) = Alphabet(name, collect(chars))
-Alphabet(chars::AbstractString) = Alphabet("", collect(chars))
-Alphabet(chars::AbstractVector{Char}) = Alphabet("", chars)
+Alphabet(name::AbstractString, chars::AbstractVector{Char}; wildcard_chars="") =
+    Alphabet(name, chars, collect(wildcard_chars))
+Alphabet(name::AbstractString, chars::AbstractString; wildcard_chars="") =
+    Alphabet(name, collect(chars), collect(wildcard_chars))
+Alphabet(chars::AbstractString; wildcard_chars="") =
+    Alphabet("", collect(chars); wildcard_chars)
+Alphabet(chars::AbstractVector{Char}; wildcard_chars="") =
+    Alphabet("", chars; wildcard_chars)
 
 Base.length(a::Alphabet) = length(a.chars)
 Base.:(==)(a::Alphabet, b::Alphabet) = (a.name == b.name && a.chars == b.chars)
