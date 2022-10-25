@@ -69,6 +69,86 @@ decode(m::LoopModel, iter) = decode(m.alphabet, iter)
 bptype(m::LoopModel, ci::Integer, cj::Integer) = m.bptype[ci, cj]
 canbp(m::LoopModel, ci::Integer, cj::Integer) = bptype(m, ci, cj) != 0
 
+"""
+    filter_wildcard_chars(model::LoopModel)
+
+Remove all parameters from tables that refer to wildcard nucleotides,
+e.g. 'N'.
+"""
+function filter_wildcard_chars(oldm::LoopModel{T,Tseq,NB_old,NBP_old,MAXLOOP}) where {T,Tseq,NB_old,NBP_old,MAXLOOP}
+    # TODO: use nospecialize on LoopModel arg?
+    # copy that also works for immutables
+    # see: https://github.com/JuliaLang/julia/issues/45143
+    function mycopy(x::T) where T
+        if ismutable(x) && ! (x isa String)
+            return copy(x)
+        else
+            return x
+        end
+    end
+
+    # TODO: assert length(old_chars) == NB_old
+    # assert maximum(oldm.bptype) == NBP
+    old_chars = oldm.alphabet.chars
+    old_wc = oldm.alphabet.wildcard_chars
+    idxs_wc = [i for i = 1:NB_old if old_chars[i] in old_wc]
+    new_chars = [c for c in old_chars if !(c in old_wc)]
+    new_wc = Char[]
+
+    # map old indices to new indices (in alphabet)
+    map_idxs = zeros(Int, length(old_chars))
+    for (i, c) in enumerate(old_chars)
+        k = findfirst(x -> x == c, new_chars)
+        map_idxs[i] = isnothing(k) ? 0 : k
+    end
+    Ib = [i for i in 1:NB_old if !(old_chars[i] in old_wc)]
+
+    old_basepairs = Tuple{Int,Int}[]
+    for i = 1:NBP_old
+        idxs = findfirst(x -> x == i, oldm.bptype)
+        !isnothing(idxs) && push!(old_basepairs, idxs)
+    end
+    new_basepairs = [(map_idxs[i],map_idxs[j]) for (i,j) in old_basepairs if !(i in idxs_wc || j in idxs_wc)]
+    Ibp = Int[i for i in 1:min(NBP_old,length(old_basepairs)) if old_basepairs[i] in new_basepairs]
+
+    NB = length(new_chars)
+    NBP = length(new_basepairs)
+    alphabet = Alphabet(oldm.alphabet.name, new_chars; wildcard_chars=new_wc)
+    m = LoopModel{T,Tseq,NB,NBP,MAXLOOP}(; alphabet)
+
+    # copy over everything that doesn't have to be filtered
+    fields_to_be_filtered = [
+        :alphabet, :bptype,
+        :stack, :intloop11, :intloop12, :intloop22, :dangle5, :dangle3,
+        :mismatch_hairpin, :mismatch_intloop, :mismatch_intloop1n,
+        :mismatch_intloop23, :mismatch_multiloop, :mismatch_extloop,
+        :terminal_nonGC_bp
+    ]
+    for field in setdiff(fieldnames(typeof(oldm)), fields_to_be_filtered)
+        setfield!(m, field, mycopy(getfield(oldm, field)))
+    end
+
+    # filter properties with potential wildcard chars
+    for (k, (i,j)) in enumerate(new_basepairs)
+        m.bptype[i,j] = k
+    end
+    m.stack .= @view oldm.stack[Ibp, Ibp]
+    m.intloop11 .= @view oldm.intloop11[Ibp, Ibp, Ib, Ib]
+    m.intloop12 .= @view oldm.intloop12[Ibp, Ibp, Ib, Ib, Ib]
+    m.intloop22 .= @view oldm.intloop22[Ibp, Ibp, Ib, Ib, Ib, Ib]
+    m.dangle5 .= @view oldm.dangle5[Ibp, Ib]
+    m.dangle3 .= @view oldm.dangle3[Ibp, Ib]
+    m.mismatch_hairpin .= @view oldm.mismatch_hairpin[Ibp, Ib, Ib]
+    m.mismatch_intloop .= @view oldm.mismatch_intloop[Ibp, Ib, Ib]
+    m.mismatch_intloop1n .= @view oldm.mismatch_intloop1n[Ibp, Ib, Ib]
+    m.mismatch_intloop23 .= @view oldm.mismatch_intloop23[Ibp, Ib, Ib]
+    m.mismatch_multiloop .= @view oldm.mismatch_multiloop[Ibp, Ib, Ib]
+    m.mismatch_extloop .= @view oldm.mismatch_extloop[Ibp, Ib, Ib]
+    m.terminal_nonGC_bp .= @view oldm.terminal_nonGC_bp[Ibp]
+
+    return m
+end
+
 
 # loopmodel CKY algorithm
 # T must be a semiring (TODO: list exact properties used)
