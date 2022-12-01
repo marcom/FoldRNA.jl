@@ -2,6 +2,7 @@ using Test
 using FoldRNA: design_random_ptarget
 
 @testset "design" begin
+    showtestset()
     @testset "for BpModel" begin
         @testset "random_ptarget" begin
             model = RNA_BPMODEL

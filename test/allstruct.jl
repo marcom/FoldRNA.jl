@@ -2,6 +2,7 @@ using Test
 using FoldRNA: allstruct
 
 @testset "allstruct" begin
+    showtestset()
     for hpmin = 0:3
         for n = 1:12
             @test length(unique(allstruct(n; hpmin))) == numstruct(n; hpmin)

@@ -16,6 +16,7 @@ const TEST_STRUCTURES_DBN = [
 
 
 @testset "allseq" begin
+    showtestset()
     @testset "allseq(n)" begin
         for n = 1:5
             @test sum(1 for _ in allseq(n)) == numseq("."^n)

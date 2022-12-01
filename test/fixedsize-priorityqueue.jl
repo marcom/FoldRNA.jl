@@ -2,6 +2,7 @@ using Test
 using FoldRNA: FixedsizePQ, enqueue!, dequeue!, peek
 
 @testset "FixedsizePQ" begin
+    showtestset()
     fpq = FixedsizePQ{String,Float64}(2)
     @test length(fpq) == 0
     @test collect(fpq) == []

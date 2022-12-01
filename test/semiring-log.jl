@@ -2,6 +2,7 @@ using Test
 using FoldRNA: LogSR
 
 @testset "Log semiring" begin
+    showtestset()
     # TODO: test all properties from https://en.wikipedia.org/wiki/Semiring
     x = LogSR(1.0)
     @test x isa Number

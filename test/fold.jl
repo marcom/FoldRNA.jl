@@ -4,6 +4,7 @@ using FoldRNA: Fold, Pairtable, energy, mfe, partfn, prob_of_struct,
 using Unitful: Quantity
 
 @testset "Fold" begin
+    showtestset()
     @testset "BpModel" begin
         seq = "GGGAAACCC"
         dbn = "(((...)))"

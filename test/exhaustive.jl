@@ -4,6 +4,7 @@ using FoldRNA: Fold, RNA_BPMODEL, exhaustive_mfe, exhaustive_partfn,
     exhaustive_bpp_partfn, exhaustive_design
 
 @testset "exhaustive" begin
+    showtestset()
 
     # BpModel
 

@@ -3,6 +3,7 @@ using Test
 using OffsetArrays: OffsetArray
 
 @testset "numstruct" begin
+    showtestset()
     @testset "numstruct(n::Int; hpmin)" begin
         # table[n,h] = number of unpseudoknotted secondary structures for
         #              sequence length n and minimum hairpin length h

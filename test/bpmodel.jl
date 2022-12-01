@@ -3,6 +3,7 @@ using FoldRNA: bpmodel, bpmodel_bpp, bptype, canbp
 using Unitful: @u_str
 
 @testset "bpmodel" begin
+    showtestset()
     @testset "BpModel" begin
         model = RNA_BPMODEL
         @test model isa BpModel

@@ -3,6 +3,7 @@ using FoldRNA: bptype, canbp
 using Unitful: Quantity
 
 @testset "loopmodel" begin
+    showtestset()
     @testset "LoopModel" begin
         model = LoopModel{Float64,Int,4,6,30}(alphabet=Alphabet("ACGU"))
         @test model isa LoopModel

@@ -2,6 +2,7 @@ using Test
 using FoldRNA: Alphabet, encode, decode
 
 @testset "Alphabet" begin
+    showtestset()
     @test Alphabet("AB") == Alphabet("AB")
     al = Alphabet("RNA", "ACGU")
     @test length(al) == 4

@@ -3,6 +3,7 @@ using FoldRNA: Hairpin, Intloop, Multiloop, Extloop
 using Unitful: unit
 
 @testset "score LoopModel" begin
+    showtestset()
     @testset "hairpin" begin
         alphabet = Alphabet("ACGU")
         T = Float64

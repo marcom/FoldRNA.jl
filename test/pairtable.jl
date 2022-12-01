@@ -19,6 +19,7 @@ const TEST_DBN_MULTISTRAND = [
 const TEST_DBN = vcat(TEST_DBN_SINGLESTRAND, TEST_DBN_MULTISTRAND)
 
 @testset "Pairtable" begin
+    showtestset()
     @testset "constructor, ==, length" begin
         pt = Pairtable(4)
         @test pt == Pairtable(zeros(Int, 4), [StrandInfo(1, 4)])
