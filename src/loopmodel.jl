@@ -33,6 +33,7 @@ Base.@kwdef mutable struct LoopModel{T,Tseq,NB,NBP,MAXLOOP}
     hpmin              :: Int = 3
     maxloop            :: Int = MAXLOOP
     RT                 :: Quantity = RT37
+    RT_ustrip          :: typeof(ustrip(RT37)) = ustrip(RT37)
     # energy unit of parameters
     unit :: Quantity = 1.0u"kcal/mol"
 
