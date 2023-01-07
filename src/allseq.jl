@@ -14,8 +14,8 @@ AllseqIter(pt, bases, basepairs) =
     AllseqIter(pt, bases, collect(basepairs), length(bases), length(basepairs))
 
 Base.length(it::AllseqIter) = numseq(it.pt; nbases=it.nbases, nbasepairs=it.nbasepairs)
-
 Base.eltype(::AllseqIter) = String
+Base.firstindex(::AllseqIter) = 1
 
 function decode(it::AllseqIter, counts_up, counts_bp)
     n = length(it.pt)
