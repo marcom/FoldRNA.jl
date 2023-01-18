@@ -33,5 +33,10 @@ using Unitful: Quantity
         # TODO: this depends on 'N' being the last base and ('N','N')
         # being the last basepair
         @test all(m2.intloop11 .== @view model.intloop11[1:end-1, 1:end-1, 1:end-1, 1:end-1])
+
+        # Base.print
+        iobuf = IOBuffer()
+        print(iobuf, RNA_TURNER2004)
+        @test String(take!(iobuf)) == "LoopModel: rna_turner2004.par"
     end
 end

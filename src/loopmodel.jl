@@ -70,6 +70,7 @@ encode(m::LoopModel, iter) = encode(m.alphabet, iter)
 decode(m::LoopModel, iter) = decode(m.alphabet, iter)
 bptype(m::LoopModel, ci::Integer, cj::Integer) = m.bptype[ci, cj]
 canbp(m::LoopModel, ci::Integer, cj::Integer) = bptype(m, ci, cj) != 0
+Base.print(io::IO, m::LoopModel) = print(io, "LoopModel: $(m.name)")
 
 """
     filter_wildcard_chars(model::LoopModel)
