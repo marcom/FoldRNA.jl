@@ -41,6 +41,7 @@ function adaptivewalk(initial_x, loss, move!; maxiter=100, prob_accept_worse=0.0
 end
 
 function design_greedy_ptarget(target::Pairtable, model; startseq::AbstractString="", kwargs...)
+    # TODO: show progress
     initial_x = collect(startseq == "" ? randseq(target) : startseq)
     loss(seq) = -prob_of_struct(Fold(join(seq), model), target)
     # TODO: hardcoded, filter alphabet from wildcards
@@ -49,6 +50,8 @@ function design_greedy_ptarget(target::Pairtable, model; startseq::AbstractStrin
     #basepairs = [(bases[Tuple(I)[1]], bases[Tuple(I)[2]]) for i = 1:length(bases), j = 1:length(bases) if model.bptype[I] != 0]
     basepairs = [ ('A','U'), ('U','A'), ('C','G'), ('G','C'), ('G','U'), ('U','G')]
     function design_move!(seq::Vector{Char}, target::Pairtable)
+        # TODO: support a) equal-weighting of changing a base vs
+        # basepair, and b) custom weighting
         i = rand(firstindex(seq):lastindex(seq))
         if isbpopening(target, i) || isbpclosing(target, i)
             # change both pairs of a basepair
