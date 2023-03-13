@@ -1,8 +1,7 @@
 # FoldRNA
 
 This is an experimental implementation of nucleic acid secondary
-structure prediction and analysis algorithms in Julia.  Everything is
-still in a state of flux and not guaranteed to work.
+structure prediction and analysis algorithms in Julia.
 
 ## Installation
 
@@ -15,10 +14,8 @@ add https://github.com/marcom/FoldRNA.jl
 ```
 
 This will mean your installation directly tracks the `main` branch on
-github, and changes will be pulled directly from github every time you
-update packages.  For more details, check out the
-[section on "Managing Packages"](https://pkgdocs.julialang.org/v1/managing-packages/)
-section of the Julia package manager docs.
+github.
+
 
 ## Basic usage
 
@@ -52,5 +49,6 @@ prob_of_struct(f, "(((...)))")
 If you are looking for more mature libraries for RNA folding in Julia,
 please take a look at:
 
-- [ViennaRNA.jl](https://github.com/marcom/ViennaRNA.jl)
 - [LinearFold.jl](https://github.com/marcom/LinearFold.jl)
+- [RNAstructure.jl](https://github.com/marcom/RNAstructure.jl)
+- [ViennaRNA.jl](https://github.com/marcom/ViennaRNA.jl)
