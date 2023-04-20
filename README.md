@@ -1,7 +1,7 @@
 # FoldRNA
 
-This is an experimental implementation of nucleic acid secondary
-structure prediction and analysis algorithms in Julia.
+This is an implementation of nucleic acid secondary structure
+prediction and analysis algorithms in Julia.
 
 ## Installation
 
@@ -44,11 +44,10 @@ partfn(f)
 prob_of_struct(f, "(((...)))")
 ```
 
-## Related packages
+## Related Julia packages for RNA secondary structure
 
-If you are looking for more mature libraries for RNA folding in Julia,
-please take a look at:
-
+- [Infernal.jl](https://github.com/cossio/Infernal.jl)
 - [LinearFold.jl](https://github.com/marcom/LinearFold.jl)
+- [Rfam.jl](https://github.com/cossio/Rfam.jl)
 - [RNAstructure.jl](https://github.com/marcom/RNAstructure.jl)
 - [ViennaRNA.jl](https://github.com/marcom/ViennaRNA.jl)
