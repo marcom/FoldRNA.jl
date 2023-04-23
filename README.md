@@ -5,16 +5,11 @@ prediction and analysis algorithms in Julia.
 
 ## Installation
 
-This package is not yet in the general Julia package registry. To
-install it, press `]` in the Julia REPL to enter package mode and
-install directly from the github repo with
+Press `]` in the Julia REPL to enter package mode and enter
 
 ```
-add https://github.com/marcom/FoldRNA.jl
+add FoldRNA
 ```
-
-This will mean your installation directly tracks the `main` branch on
-github.
 
 
 ## Basic usage
