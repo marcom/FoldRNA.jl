@@ -1,5 +1,5 @@
 export allstruct
-using Semicoroutines
+using ResumableFunctions
 
 """
     allstruct(seq::AbstractString; hpmin=3, canbp::Function=(s,i,j)->...)
