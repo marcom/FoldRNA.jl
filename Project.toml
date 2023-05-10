@@ -1,7 +1,7 @@
 name = "FoldRNA"
 uuid = "c54b6bf2-3650-4185-8b5f-4b1290dd1f68"
 authors = ["Marco Matthies <marco.matthies@gmail.com>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
