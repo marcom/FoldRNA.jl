@@ -43,6 +43,7 @@ prob_of_struct(f, "(((...)))")
 
 - [Infernal.jl](https://github.com/cossio/Infernal.jl)
 - [LinearFold.jl](https://github.com/marcom/LinearFold.jl)
+- [PlotRNA.jl](https://github.com/marcom/PlotRNA.jl)
 - [Rfam.jl](https://github.com/cossio/Rfam.jl)
 - [RNAstructure.jl](https://github.com/marcom/RNAstructure.jl)
 - [ViennaRNA.jl](https://github.com/marcom/ViennaRNA.jl)
