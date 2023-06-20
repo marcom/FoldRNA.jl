@@ -1,5 +1,7 @@
 # FoldRNA
 
+[![Build Status](https://github.com/marcom/FoldRNA.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/marcom/FoldRNA.jl/actions/workflows/CI.yml?query=branch%3Amain)
+
 This is an implementation of nucleic acid secondary structure
 prediction and analysis algorithms in Julia.
 
