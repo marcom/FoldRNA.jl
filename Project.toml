@@ -1,7 +1,7 @@
 name = "FoldRNA"
 uuid = "c54b6bf2-3650-4185-8b5f-4b1290dd1f68"
 authors = ["Marco Matthies <marco.matthies@gmail.com>"]
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
@@ -18,7 +18,7 @@ ViennaRNA_jll = "b7a990de-7fa3-5a2e-8a39-d875e4dafecd"
 DataStructures = "0.18"
 LogExpFunctions = "0.3"
 OffsetArrays = "1.12"
-ResumableFunctions = "0.6"
+ResumableFunctions = "0.6, 1"
 StaticArrays = "1.4.4"
 Unitful = "1.11"
 ViennaRNA_jll = "~2.6.2"
