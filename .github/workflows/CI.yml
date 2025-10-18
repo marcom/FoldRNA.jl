@@ -5,12 +5,20 @@ on:
     branches: [ master ]
   pull_request:
 
+# Cancel older in-progress runs of this workflow on the same ref (branch/PR)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # Read-only token for all jobs
 permissions:
   contents: read
 
 jobs:
   test:
+    # Fail the job if it runs longer than 30 minutes
+    timeout-minutes: 30
+
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
