@@ -6,7 +6,7 @@ function design_random_ptarget(target::Pairtable, model;
         seq = randseq(target)
         seq in keys(best) && continue
         ptarget = prob_of_struct(Fold(seq, model), target)
-        enqueue!(best, seq, ptarget)
+        push!(best, seq => ptarget)
     end
     return collect(best)
 end

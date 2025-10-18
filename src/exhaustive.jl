@@ -62,7 +62,7 @@ function exhaustive_design(target::Pairtable, model; nbest::Integer=20)
     best = FixedsizePQ{String,Float64}(nbest)
     for seq in allseq(target)
         ptarget = prob_of_struct(Fold(seq, model), target)
-        enqueue!(best, seq, ptarget)
+        push!(best, seq => ptarget)
     end
     return collect(best)
 end
