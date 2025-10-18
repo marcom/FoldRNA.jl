@@ -3,7 +3,6 @@
 # TODO: this should probably be put into DataStructures.jl
 
 using DataStructures: PriorityQueue
-import DataStructures: enqueue!, peek, dequeue!
 
 struct FixedsizePQ{K,V,Order}
     n :: Int
@@ -21,23 +20,20 @@ Base.length(f::FixedsizePQ) = length(f.pq)
 Base.collect(f::FixedsizePQ) = collect(f.pq)
 Base.keys(f::FixedsizePQ) = keys(f.pq)
 Base.values(f::FixedsizePQ) = values(f.pq)
+Base.first(f::FixedsizePQ) = first(f.pq)
 
-peek(f::FixedsizePQ) = peek(f.pq)
-
-function enqueue!(f::FixedsizePQ{K,V}, k::K, v::V) where {K,V}
+function Base.push!(f::FixedsizePQ{K,V}, kv::Pair{K,V}) where {K,V}
     if length(f) < f.n
-        enqueue!(f.pq, k, v)
+        push!(f.pq, kv)
     else
-        ek, ev = peek(f.pq)
-        if Base.Order.lt(f.pq.o, ev, v)
-            dequeue!(f)
-            enqueue!(f.pq, k, v)
+        # TODO: assert that length(f) == f.n
+        ek, ev = first(f.pq)
+        if Base.Order.lt(f.pq.o, ev, last(kv))
+            popfirst!(f)
+            push!(f.pq, kv)
         end
     end
     return f
 end
 
-enqueue!(f::FixedsizePQ{K,V}, p::Pair{K,V}) where {K,V} =
-    enqueue!(f, first(p), last(p))
-
-dequeue!(f::FixedsizePQ) = dequeue!(f.pq)
+Base.popfirst!(f::FixedsizePQ) = popfirst!(f.pq)
