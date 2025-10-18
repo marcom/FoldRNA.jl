@@ -15,6 +15,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 ViennaRNA_jll = "b7a990de-7fa3-5a2e-8a39-d875e4dafecd"
 
 [compat]
+Aqua = "0.8.14"
 DataStructures = "0.19"
 LinearAlgebra = "1"
 LogExpFunctions = "0.3"
@@ -28,6 +29,7 @@ julia = "1.10"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 
 [targets]
 test = ["Test"]

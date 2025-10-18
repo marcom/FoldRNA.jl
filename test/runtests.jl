@@ -6,6 +6,8 @@ showtestset() = println(" "^(2 * Test.get_testset_depth()), "testing ",
 
 @testset verbose=true "FoldRNA" begin
     showtestset()
+    include("aqua.jl")
+
     include("fixedsize-priorityqueue.jl")
 
     include("alphabet.jl")
